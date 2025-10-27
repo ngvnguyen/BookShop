@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <style name = "BookApp.Splash" parent = "Theme.SplashScreen">
+        <item name = "windowSplashScreenAnimatedIcon">@drawable/splash</item>
+        <item name = "windowSplashScreenBackground">#ffffff</item>
+        <item name = "postSplashScreenTheme">@style/BookApp.Theme</item>
+    </style>
+    <style name = "BookApp.Theme" parent = "android:Theme.Material.Light.NoActionBar"/>
+</resources>
