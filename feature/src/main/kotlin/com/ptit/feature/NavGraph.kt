@@ -11,6 +11,10 @@ import com.ptit.feature.screen.ForgotPasswordScreen
 import com.ptit.feature.screen.HomeGraphScreen
 import com.ptit.feature.screen.ResetPasswordScreen
 import com.ptit.feature.navigation.Screen
+import com.ptit.feature.screen.BookDetailsScreen
+import com.ptit.feature.screen.ChangePasswordScreen
+import com.ptit.feature.screen.PickAddressScreen
+import com.ptit.feature.screen.PickCouponScreen
 import com.ptit.feature.screen.ProfileScreen
 import com.ptit.feature.screen.admin.adminNavGraph
 
@@ -53,6 +57,18 @@ fun NavGraph(
                 },
                 navigateToProfileScreen = {
                     navController.navigate(Screen.Profile)
+                },
+                navigateToBookDetails = {id->
+                    navController.navigate(Screen.BookDetails(id))
+                },
+                navigateToChangePassword = {
+                    navController.navigate(Screen.ChangePassword)
+                },
+                navigateToPickAddress = {
+                    navController.navigate(Screen.PickAddress)
+                },
+                navigateToPickCoupon = {
+                    navController.navigate(Screen.PickCoupon)
                 }
             )
         }
@@ -85,6 +101,42 @@ fun NavGraph(
                 }
             )
         }
+        composable<Screen.ChangePassword> {
+            ChangePasswordScreen(
+                navigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable<Screen.BookDetails> {
+            BookDetailsScreen(
+                navigateBack = {
+                    navController.navigateUp()
+                },
+                navigateToCheckOut = {
+
+                }
+            )
+        }
+        composable<Screen.PickAddress> {
+            PickAddressScreen(
+                navigateBack = {selectedId->
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("address_id",selectedId)
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable<Screen.PickCoupon> {
+            PickCouponScreen(
+                navigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
         adminNavGraph(navController)
     }
 }

@@ -16,7 +16,7 @@ import com.ptit.data.repository.PermissionRepository
 import com.ptit.data.repository.PublisherRepository
 import com.ptit.data.repository.RoleRepository
 import com.ptit.data.repository.UserRepository
-import com.ptit.feature.SessionManager
+import com.ptit.feature.util.SessionManager
 import com.ptit.feature.permission.Permission
 import com.ptit.feature.permission.toPermissionData
 import com.ptit.feature.permission.toPermissions
@@ -281,7 +281,7 @@ class AdminViewModel(
         get() = roleForm.name.isNotBlank() &&
                 roleForm.description.isNotBlank()
 
-    var bookForm by mutableStateOf(BookForm(createdBy = email));private set
+    var bookForm by mutableStateOf(BookForm());private set
     val isBookFormValid : Boolean
         get() = bookForm.name.isNotBlank() &&
                 bookForm.author != null &&
@@ -400,9 +400,6 @@ class AdminViewModel(
     }
     fun updateUserPhone(phone:String){
         userForm = userForm.copy(phone = phone)
-    }
-    fun updateUserAddress(address:String){
-        userForm = userForm.copy(address = address)
     }
     fun updateUserPassword(password: String){
         userForm = userForm.copy(password = password)
@@ -584,7 +581,7 @@ class AdminViewModel(
     }
 
     fun resetBookForm(){
-        bookForm = BookForm(createdBy = email)
+        bookForm = BookForm()
     }
 
     fun updateBookForm(

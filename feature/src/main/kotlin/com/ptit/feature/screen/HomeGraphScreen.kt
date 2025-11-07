@@ -2,10 +2,15 @@ package com.ptit.feature.screen
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -48,6 +53,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -92,7 +98,10 @@ import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.bebasNeueFont
 import com.ptit.shared.component.CustomSearchBar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 
@@ -102,7 +111,11 @@ fun HomeGraphScreen(
     modifier: Modifier = Modifier,
     navigateToAuthScreen:()-> Unit,
     navigateToAdminScreen:()->Unit,
-    navigateToProfileScreen:()->Unit
+    navigateToProfileScreen:()->Unit,
+    navigateToBookDetails:(Int)->Unit,
+    navigateToChangePassword:()->Unit,
+    navigateToPickAddress:()->Unit,
+    navigateToPickCoupon:()-> Unit
 ){
     val context = LocalContext.current
     val homeViewModel = koinViewModel<HomeViewModel>()
@@ -126,6 +139,8 @@ fun HomeGraphScreen(
     val navController = rememberNavController()
     val currentRoute by navController.currentBackStackEntryAsState()
 
+    var previousDestinationId by remember { mutableIntStateOf(NavigationEnum.Home.id) }
+    var currentDestinationId by remember { mutableIntStateOf(NavigationEnum.Home.id) }
 
     val selectedDestination by remember {
         derivedStateOf {
@@ -136,9 +151,13 @@ fun HomeGraphScreen(
                 else ->NavigationEnum.Home
             }
         }
-
     }
-
+    LaunchedEffect(selectedDestination) {
+        previousDestinationId = currentDestinationId
+        currentDestinationId = selectedDestination.id
+    }
+    val isCartEmpty by homeViewModel.isCartEmpty.collectAsState()
+    LaunchedEffect(isCartEmpty) {println(isCartEmpty) }
 
     Box(
         modifier = modifier
@@ -166,8 +185,8 @@ fun HomeGraphScreen(
                             navigateToAdminScreen()
                         }
 
-                        CustomDrawerItem.Category -> {
-
+                        CustomDrawerItem.ChangePassword -> {
+                            navigateToChangePassword()
                         }
                     }
                 }
@@ -190,19 +209,47 @@ fun HomeGraphScreen(
                 NavHost(
                     navController = navController,
                     startDestination = Screen.HomeGraph.Home,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    enterTransition = {
+                        if (previousDestinationId<currentDestinationId){
+                            slideInHorizontally(initialOffsetX = {it})+ fadeIn()
+                        }else slideInHorizontally(initialOffsetX = {-it})+ fadeIn()
+                    },
+                    exitTransition = {
+                        ExitTransition.None
+                    },
+                    popExitTransition = {
+                        if (previousDestinationId<currentDestinationId){
+                            slideOutHorizontally(targetOffsetX = {-it})+ fadeOut()
+                        }else slideOutHorizontally(targetOffsetX = {it})+ fadeOut()
+                    }
                 ){
                     composable<Screen.HomeGraph.Home> {
                         HomeScreen(
-                            onDrawerClick = {drawerState = drawerState.opposite()}
+                            onDrawerClick = {drawerState = drawerState.opposite()},
+                            navigateToBookDetails = navigateToBookDetails,
+                            navigateToBook = {
+                                navController.navigate(Screen.HomeGraph.Book)
+                            },
+                            viewModel = homeViewModel
                         )
                     }
                     composable<Screen.HomeGraph.Book> {
-
+                        BookScreen(
+                            navigateToBookDetails = navigateToBookDetails,
+                            onDrawerClick = {drawerState = drawerState.opposite()},
+                            viewModel = homeViewModel
+                        )
                     }
 
                     composable<Screen.HomeGraph.Cart> {
-
+                        CartScreen(
+                            navigateToBookDetails = navigateToBookDetails,
+                            navigateToCheckOut = {},
+                            viewModel = homeViewModel,
+                            navigateToPickAddress = navigateToPickAddress,
+                            navigateToPickCoupon = navigateToPickCoupon
+                        )
                     }
                 }
 
@@ -210,7 +257,7 @@ fun HomeGraphScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(SurfaceDarker)
-                        .padding(horizontal = 18.dp, vertical = 4.dp),
+                        .padding(horizontal = 24.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     NavigationEnum.entries.forEach {navEnum->
@@ -227,7 +274,7 @@ fun HomeGraphScreen(
                                 }
                             },
                             isSelect = navEnum == selectedDestination,
-                            needBadge = navEnum == NavigationEnum.Cart
+                            needBadge = navEnum == NavigationEnum.Cart && !isCartEmpty
                         )
                     }
                 }
@@ -239,58 +286,3 @@ fun HomeGraphScreen(
     }
 }
 
-
-@Composable
-fun HorizontalBookCarousel(
-    modifier : Modifier = Modifier,
-    items : List<BookForm>,
-    onClick: (BookForm) -> Unit
-){
-    val listState = rememberLazyListState()
-    val centeredIndex by remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val centeredOffset = (layoutInfo.viewportStartOffset+layoutInfo.viewportEndOffset)/2
-            layoutInfo.visibleItemsInfo.minByOrNull { itemInfo->
-                val itemCenter = itemInfo.offset + itemInfo.size/2
-                abs(itemCenter - centeredOffset)
-            }?.index
-        }
-    }
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        state = listState
-    ) {
-        itemsIndexed(
-            items = items,
-            key = {index,item->item.id}
-        ) { index,item->
-            val animatedScale by animateFloatAsState(
-                targetValue = if(centeredIndex == index) 1f else 0.95f,
-                animationSpec = tween(300)
-            )
-            val animatedAlpha by animateFloatAsState(
-                targetValue = if(centeredIndex == index) 1f else 0.8f,
-                animationSpec = tween(300)
-            )
-            val animatedElevation by animateDpAsState(
-                targetValue = if(centeredIndex == index) 8.dp else 0.dp,
-                animationSpec = tween(300)
-            )
-            BookCard(
-                item = item,
-                onClick = {onClick(item)},
-                modifier = Modifier
-                    .graphicsLayer {
-                        scaleX = animatedScale
-                        scaleY = animatedScale
-                        alpha = animatedAlpha
-                        shadowElevation = animatedElevation.toPx()
-                    },
-                cardHeight = 260.dp,
-                elevation = 0.dp
-            )
-        }
-    }
-}

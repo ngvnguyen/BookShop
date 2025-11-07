@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -128,7 +129,8 @@ fun ResetPasswordScreen(
                             Spacer(modifier = Modifier.height(24.dp))
                             PrimaryButton(
                                 text = "Verify",
-                                onClick = resetPasswordViewModel::verifyOTP
+                                onClick = resetPasswordViewModel::verifyOTP,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     },
@@ -169,7 +171,8 @@ fun ResetPasswordScreen(
                                         }
                                     )
                                 },
-                                enabled = resetPasswordViewModel.isPasswordCorrect
+                                enabled = resetPasswordViewModel.isPasswordCorrect,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     },
@@ -182,7 +185,8 @@ fun ResetPasswordScreen(
                             Spacer(modifier = Modifier.height(24.dp))
                             PrimaryButton(
                                 text = "Retry OTP",
-                                onClick = resetPasswordViewModel::resetVerifyOTP
+                                onClick = resetPasswordViewModel::resetVerifyOTP,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     },

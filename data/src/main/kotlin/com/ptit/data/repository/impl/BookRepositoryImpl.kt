@@ -97,4 +97,29 @@ class BookRepositoryImpl(private val bookApi: BookApi): BookRepository {
             return RequestState.ERROR("Network error")
         }
     }
+
+    override suspend fun getBookById(
+        accessToken: String,
+        bookId: Int
+    ): RequestState<BookResponseData> {
+        try {
+
+            val response = bookApi.getBookById("Bearer $accessToken",bookId)
+            if (response.isSuccessful){
+                val data = response.body()?.data
+                data?.let { return RequestState.SUCCESS(it) }
+            }
+            val errBody = response.errorBody()?.string()
+            errBody?.let { body->
+                val errMsg = Json.decodeFromString<ResponseEntity<BookResponseData>>(body).message
+                return RequestState.ERROR(errMsg)
+            }
+            return RequestState.ERROR("Unknown error")
+        }catch (e: SocketTimeoutException){
+            return RequestState.ERROR("Server not responding")
+        } catch (e: Exception){
+            e.printStackTrace()
+            return RequestState.ERROR("Network error")
+        }
+    }
 }

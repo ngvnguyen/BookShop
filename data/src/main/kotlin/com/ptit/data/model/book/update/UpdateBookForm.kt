@@ -14,7 +14,7 @@ data class UpdateBookForm(
     val description: String,
     @SerialName("discount")
     val discount: Double,
-    @SerialName("image")
+    @SerialName("image_url")
     val image: String,
     @SerialName("language")
     val language: String,
@@ -27,9 +27,7 @@ data class UpdateBookForm(
     @SerialName("quantity")
     val quantity: Int,
     @SerialName("status")
-    val status: String,
-    @SerialName("title")
-    val title: String
+    val status: String
 ) {
     @Serializable
     data class Author(

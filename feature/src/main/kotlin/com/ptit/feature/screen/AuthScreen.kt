@@ -17,12 +17,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +71,8 @@ import com.ptit.shared.bebasNeueFont
 import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.PrimaryButton
 import com.ptit.feature.navigation.Screen
+import com.ptit.shared.IconSecondary
+import com.ptit.shared.SurfaceDarker
 import com.ptit.shared.component.CustomTextFieldWithLabel
 import com.ptit.shared.robotoCondensedFont
 import org.koin.compose.viewmodel.koinViewModel
@@ -93,199 +97,218 @@ fun AuthScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title={
-                    Text(
-                        text = "Book Shop",
-                        fontSize = FontSize.EXTRA_LARGE,
-                        fontWeight = FontWeight.Bold,
-                        color = TextSecondary,
-                        fontFamily = bebasNeueFont()
-                    )
-                }
-            )
-        },
-        modifier = Modifier
-            .fillMaxSize()
-
-    ) {padding->
-        Box(
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title={
+                        Text(
+                            text = "Book Shop",
+                            fontSize = FontSize.EXTRA_LARGE,
+                            fontWeight = FontWeight.Bold,
+                            color = TextSecondary,
+                            fontFamily = bebasNeueFont()
+                        )
+                    }
+                )
+            },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = padding.calculateTopPadding(),
-                    bottom = padding.calculateBottomPadding()
-                )
-        ){
-            AnimatedContent(viewModel.authTarget) {target->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = "Welcome Back!",
-                        fontSize = FontSize.LARGE,
-                        color = TextPrimary,
-                        fontFamily = robotoCondensedFont()
-                    )
-                    Text(
-                        text = if (target.isLogin()) "Login to continue"
-                            else "Create an account to continue",
-                        fontSize = FontSize.EXTRA_REGULAR,
-                        color = TextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
 
+        ) {padding->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = padding.calculateTopPadding(),
+                        bottom = padding.calculateBottomPadding()
+                    )
+            ){
+                AnimatedContent(viewModel.authTarget) {target->
                     Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        if (target.isSignUp()){
-                            CustomTextFieldWithLabel(
-                                value = viewModel.getName(),
-                                onValueChange = viewModel::changeName,
-                                placeholder = "Your name",
-                                label = "Name"
-                            )
-                        }
-                        CustomTextFieldWithLabel(
-                            value = viewModel.getEmail(),
-                            onValueChange = viewModel::changeEmail,
-                            label = "Email",
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Email
-                            ),
-                            placeholder = "Your email address"
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = "Welcome Back!",
+                            fontSize = FontSize.LARGE,
+                            color = TextPrimary,
+                            fontFamily = robotoCondensedFont()
                         )
+                        Text(
+                            text = if (target.isLogin()) "Login to continue"
+                            else "Create an account to continue",
+                            fontSize = FontSize.EXTRA_REGULAR,
+                            color = TextPrimary
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
 
-                        if (target.isSignUp()){
-                            CustomTextFieldWithLabel(
-                                value = viewModel.getPhone(),
-                                onValueChange = viewModel::changePhone,
-                                label = "Phone",
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Phone
-                                ),
-                                placeholder = "Your phone number"
-                            )
-                        }
-                        CustomTextFieldWithLabel(
-                            value = viewModel.getPassword(),
-                            label = "Password",
-                            onValueChange = viewModel::changePassword,
-                            placeholder = if (target.isLogin()) "Your password"
-                                else "Min 6 characters",
-                            visualTransformation = if (showPassword) VisualTransformation.None
-                            else PasswordVisualTransformation(),
-                            trailingIcon = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(end = 12.dp)
-                                ) {
-                                    IconButton(
-                                        onClick = {showPassword = !showPassword}
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(
-                                                if (showPassword) Resources.Icon.VisibilityOff
-                                                else Resources.Icon.Visibility
-                                            ),
-                                            contentDescription = "Toggle password visibility"
-                                        )
-                                    }
-                                    if (target.isLogin()){
-                                        VerticalDivider(
-                                            modifier = Modifier.height(24.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = "Forgot?",
-                                            color = TextSecondary,
-                                            modifier = Modifier.clickable{
-                                                navigateToForgotPassword()
-                                            }
-                                        )
-                                    }
-                                }
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (target.isSignUp()){
+                                CustomTextFieldWithLabel(
+                                    value = viewModel.getName(),
+                                    onValueChange = viewModel::changeName,
+                                    placeholder = "Your name",
+                                    label = "Name"
+                                )
                             }
-                        )
-                        if (target.isSignUp()){
                             CustomTextFieldWithLabel(
-                                value = viewModel.getConfirmPassword(),
-                                onValueChange = viewModel::changeConfirmPassword,
-                                label = "Confirm Password",
-                                placeholder = "Confirm Password",
+                                value = viewModel.getEmail(),
+                                onValueChange = viewModel::changeEmail,
+                                label = "Email",
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Email
+                                ),
+                                placeholder = "Your email address"
+                            )
+
+                            if (target.isSignUp()){
+                                CustomTextFieldWithLabel(
+                                    value = viewModel.getPhone(),
+                                    onValueChange = viewModel::changePhone,
+                                    label = "Phone",
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Phone
+                                    ),
+                                    placeholder = "Your phone number"
+                                )
+                            }
+                            CustomTextFieldWithLabel(
+                                value = viewModel.getPassword(),
+                                label = "Password",
+                                onValueChange = viewModel::changePassword,
+                                placeholder = if (target.isLogin()) "Your password"
+                                else "Min 6 characters",
                                 visualTransformation = if (showPassword) VisualTransformation.None
                                 else PasswordVisualTransformation(),
                                 trailingIcon = {
-                                    IconButton(
-                                        onClick = {showPassword = !showPassword}
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(end = 12.dp)
                                     ) {
-                                        Icon(
-                                            painter = painterResource(
-                                                if (showPassword) Resources.Icon.VisibilityOff
-                                                else Resources.Icon.Visibility
-                                            ),
-                                            contentDescription = "Toggle password visibility"
-                                        )
+                                        IconButton(
+                                            onClick = {showPassword = !showPassword}
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(
+                                                    if (showPassword) Resources.Icon.VisibilityOff
+                                                    else Resources.Icon.Visibility
+                                                ),
+                                                contentDescription = "Toggle password visibility"
+                                            )
+                                        }
+                                        if (target.isLogin()){
+                                            VerticalDivider(
+                                                modifier = Modifier.height(24.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = "Forgot?",
+                                                color = TextSecondary,
+                                                modifier = Modifier.clickable{
+                                                    navigateToForgotPassword()
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             )
-                        }
-                        Spacer(modifier = Modifier.width(60.dp))
-
-                        PrimaryButton(
-                            text = if (target.isLogin()) "Sign in"
-                                else "Sign up",
-                            onClick = {
-                                if (target.isLogin()){
-                                    viewModel.login()
-                                }else{viewModel.signUp(
-                                    onSuccess = {message->
-                                        Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
-                                        viewModel.changeAuthTarget(viewModel.authTarget.opposite())
-                                        viewModel.resetSignUpStatus()
-                                    },
-                                    onError = {e->
-                                        Toast.makeText(context,"Sign up failed $e",Toast.LENGTH_SHORT).show()
-                                        viewModel.resetSignUpStatus()
+                            if (target.isSignUp()){
+                                CustomTextFieldWithLabel(
+                                    value = viewModel.getConfirmPassword(),
+                                    onValueChange = viewModel::changeConfirmPassword,
+                                    label = "Confirm Password",
+                                    placeholder = "Confirm Password",
+                                    visualTransformation = if (showPassword) VisualTransformation.None
+                                    else PasswordVisualTransformation(),
+                                    trailingIcon = {
+                                        IconButton(
+                                            onClick = {showPassword = !showPassword}
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(
+                                                    if (showPassword) Resources.Icon.VisibilityOff
+                                                    else Resources.Icon.Visibility
+                                                ),
+                                                contentDescription = "Toggle password visibility"
+                                            )
+                                        }
                                     }
-                                )}
-                            },
-                            enabled = viewModel.isFormValid
-                        )
-                        Button(
-                            onClick = {
-                                viewModel.changeAuthTarget(target.opposite())
-                            },
-                            shape = RoundedCornerShape(6.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(20.dp),
-                            colors = ButtonDefaults.buttonColors().copy(
-                                containerColor = CategoryPurple
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(60.dp))
+
+                            PrimaryButton(
+                                text = if (target.isLogin()) "Sign in"
+                                else "Sign up",
+                                onClick = {
+                                    if (target.isLogin()){
+                                        viewModel.login()
+                                    }else{viewModel.signUp(
+                                        onSuccess = {message->
+                                            Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
+                                            viewModel.changeAuthTarget(viewModel.authTarget.opposite())
+                                            viewModel.resetSignUpStatus()
+                                        },
+                                        onError = {e->
+                                            Toast.makeText(context,"Sign up failed $e",Toast.LENGTH_SHORT).show()
+                                            viewModel.resetSignUpStatus()
+                                        }
+                                    )}
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                enabled = viewModel.isFormValid
                             )
-                        ){
-                            Text(
-                                text = if (target.isLogin()) "Don't have an account? Sign up"
+                            Button(
+                                onClick = {
+                                    viewModel.changeAuthTarget(target.opposite())
+                                },
+                                shape = RoundedCornerShape(6.dp),
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(20.dp),
+                                colors = ButtonDefaults.buttonColors().copy(
+                                    containerColor = CategoryPurple
+                                )
+                            ){
+                                Text(
+                                    text = if (target.isLogin()) "Don't have an account? Sign up"
                                     else "Already have an account? Sign in",
-                                fontSize = FontSize.REGULAR,
-                                fontWeight = FontWeight.Medium
-                            )
+                                    fontSize = FontSize.REGULAR,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
+
+
                     }
-
-
                 }
             }
-            if (viewModel.signUpStatus.isLoading() || loginStatus.isLoading()){
-                LoadingCard(modifier = Modifier.fillMaxSize())
+
+        }
+        if (viewModel.signUpStatus.isLoading() || loginStatus.isLoading()){
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 24.dp)
+                    .background(Black.copy(alpha = Alpha.TWENTY_PERCENT))
+                    .clickable(enabled = false, onClick = {})
+            ){
+                CircularProgressIndicator(
+                    strokeWidth = 3.dp,
+                    color = IconSecondary,
+                    modifier = Modifier
+                        .size(24.dp)
+                )
             }
         }
-
     }
 }

@@ -9,8 +9,8 @@ class CreateCategoryResponse{
     data class Data(
         @SerialName("created_at")
         val createdAt: String,
-        @SerialName("created_by")
-        val createdBy: String,
+        @SerialName("update_at")
+        val updatedAt: String?,
         @SerialName("description")
         val description: String,
         @SerialName("id")

@@ -1,6 +1,7 @@
 package com.ptit.data.api
 
 import com.ptit.data.model.ResponseEntity
+import com.ptit.data.model.auth.changepassword.ChangePasswordForm
 import com.ptit.data.model.auth.login.LoginForm
 import com.ptit.data.model.auth.createaccount.SignUpBody
 import com.ptit.data.model.auth.getaccount.AccountResponse
@@ -42,4 +43,10 @@ interface AuthApi {
 
     @POST("api/v1/auth/reset-password")
     suspend fun resetPassword(@Body body: ResetPasswordForm): Response<String>
+
+    @POST("/api/v1/auth/password-change")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Body body: ChangePasswordForm
+    ): Response<String>
 }

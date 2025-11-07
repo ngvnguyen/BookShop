@@ -11,4 +11,5 @@ interface BookRepository {
     suspend fun updateBook(accessToken: String,bookId:Int,bookForm: UpdateBookForm): RequestState<Unit>
     suspend fun searchBookPaged(accessToken:String,page:Int,name:String,category:String,author:String):
             RequestState<FetchBookPagedResponse.Data>
+    suspend fun getBookById(accessToken: String,bookId:Int): RequestState<BookResponseData>
 }

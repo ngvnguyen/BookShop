@@ -203,11 +203,7 @@ fun ProfileScreen(
                             keyboardType = KeyboardType.Phone
                         )
                     )
-                    CustomTextFieldWithLabel(
-                        value = profileForm.address,
-                        onValueChange = viewModel::updateAddress,
-                        label = "Address"
-                    )
+
                     Row {
                         CustomTextFieldWithLabel(
                             value = viewModel.getDateString(profileForm.dateOfBirth),
@@ -274,7 +270,8 @@ fun ProfileScreen(
                             onSuccess = {
                                 snackbarHostState.showSnackbar("Updated")
                             }
-                        )}
+                        )},
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 

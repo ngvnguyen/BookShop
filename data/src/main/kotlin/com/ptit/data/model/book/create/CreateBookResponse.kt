@@ -18,7 +18,7 @@ class CreateBookResponse{
         val discount: Double,
         @SerialName("id")
         val id: Int,
-        @SerialName("image")
+        @SerialName("image_url")
         val image: String,
         @SerialName("language")
         val language: String,
@@ -31,9 +31,7 @@ class CreateBookResponse{
         @SerialName("quantity")
         val quantity: Int,
         @SerialName("status")
-        val status: String,
-        @SerialName("title")
-        val title: String
+        val status: String
     ) {
         @Serializable
         data class Author(

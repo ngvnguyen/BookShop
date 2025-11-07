@@ -12,8 +12,8 @@ data class BookResponseData(
     val category: Category,
     @SerialName("created_at")
     val createdAt: String,
-    @SerialName("created_by")
-    val createdBy: String,
+    @SerialName("update_at")
+    val updatedAt: String?,
     @SerialName("description")
     val description: String,
     @SerialName("discount")
@@ -22,8 +22,8 @@ data class BookResponseData(
     val finalPrice: Double,
     @SerialName("id")
     val id: Int,
-    @SerialName("image")
-    val image: String,
+    @SerialName("image_url")
+    val image: String?,
     @SerialName("language")
     val language: String,
     @SerialName("name")
@@ -35,9 +35,7 @@ data class BookResponseData(
     @SerialName("quantity")
     val quantity: Int,
     @SerialName("status")
-    val status: String,
-    @SerialName("title")
-    val title: String
+    val status: String
 ) {
     @Serializable
     data class Author(

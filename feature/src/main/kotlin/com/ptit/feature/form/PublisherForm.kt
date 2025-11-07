@@ -9,7 +9,7 @@ data class PublisherForm(
     val email:String="",
     val phone:String="",
     val status:Status=Status.ACTIVE,
-    val createdBy:String="",
+    val updatedAt:String="",
     val createdAt:String=""
 ){
     enum class Status{
@@ -24,6 +24,6 @@ fun PublisherResponseData.toPublisherForm() = PublisherForm(
     email = email,
     phone = phone,
     status = PublisherForm.Status.valueOf(status),
-    createdBy = createdBy,
+    updatedAt = updatedAt ?:"",
     createdAt = createdAt
 )

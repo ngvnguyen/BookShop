@@ -10,23 +10,19 @@ import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
 import com.ptit.data.model.user.fetch.UserResponseData
 import com.ptit.data.model.user.update.UpdateProfileForm
-import com.ptit.data.repository.FileRepository
 import com.ptit.data.repository.UserRepository
-import com.ptit.feature.SessionManager
+import com.ptit.feature.util.SessionManager
 import com.ptit.feature.domain.Gender
 import com.ptit.feature.util.UploadImageHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 
@@ -34,14 +30,12 @@ data class ProfileForm(
     val name:String="",
     val email:String="",
     val phone:String="",
-    val address:String="",
     val avatarUrl:String?=null,
     val dateOfBirth: Instant= Instant.now(),
     val gender:Gender= Gender.MALE
 )
 
 fun ProfileForm.toUpdateProfileForm() = UpdateProfileForm(
-    address = address,
     avatar = avatarUrl,
     dateOfBirth = dateOfBirth.toString(),
     gender = gender.name,
@@ -52,7 +46,6 @@ fun UserResponseData.toProfileForm() = ProfileForm(
     name = name,
     email = email,
     phone = phone?:"",
-    address = address?:"",
     avatarUrl = avatarUrl,
     dateOfBirth = dateOfBirth?.let{Instant.parse(it)}?: Instant.now(),
     gender = gender.let {Gender.valueOf(it)}
@@ -120,9 +113,6 @@ class ProfileViewModel(
     }
     fun updatePhone(phone:String){
         profileForm = profileForm.copy(phone = phone)
-    }
-    fun updateAddress(address:String){
-        profileForm = profileForm.copy(address = address)
     }
     fun updateDateOfBirth(time: Long){
         profileForm = profileForm.copy(dateOfBirth = getInstantFromLong(time))

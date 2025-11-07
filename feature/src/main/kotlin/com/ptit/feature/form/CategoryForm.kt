@@ -8,7 +8,7 @@ data class CategoryForm(
     val id:Int=0,
     val status: Status=Status.ACTIVE,
     val createdAt:String="",
-    val createdBy:String=""
+    val updatedAt:String=""
 ){
     enum class Status(val title: String){
         ACTIVE("Active"),
@@ -22,5 +22,5 @@ fun CategoryResponseData.toCategoryForm() = CategoryForm(
     id = id,
     status = CategoryForm.Status.valueOf(status),
     createdAt = createdAt,
-    createdBy = createdBy
+    updatedAt = updatedAt?:""
 )

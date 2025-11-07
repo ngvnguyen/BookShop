@@ -17,9 +17,8 @@ data class BookForm(
     val quantity:Int=0,
     val discount:Double=0.0,
     val language:String="",
-    val title:String="",
     val createdAt:String?=null,
-    val createdBy:String?=null,
+    val updatedAt:String?=null,
     val status: Status= Status.AVAILABLE,
     val page:Int = 0,
     val maxPage:Int = 0
@@ -57,9 +56,8 @@ fun BookResponseData.toBookForm(page:Int,maxPage: Int) = BookForm(
     quantity = quantity,
     discount = discount,
     language = language,
-    title = language,
     createdAt = createdAt,
-    createdBy = createdBy,
+    updatedAt = updatedAt,
     status = BookForm.Status.valueOf(status),
     page = page,
     maxPage = maxPage
@@ -76,8 +74,7 @@ fun BookForm.toCreateBookForm(): CreateBookForm = try {
         name = name,
         price = price,
         publisher = CreateBookForm.Publisher(publisher!!.id),
-        quantity = quantity,
-        title = title
+        quantity = quantity
     )
 }catch (e: Exception){
     e.printStackTrace()
@@ -96,7 +93,6 @@ fun BookForm.toUpdateBookForm(): UpdateBookForm = try {
         price = price,
         publisher = UpdateBookForm.Publisher(publisher!!.id),
         quantity = quantity,
-        title = title,
         status = status.name
     )
 }catch (e: Exception){

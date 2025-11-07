@@ -1,6 +1,5 @@
 package com.ptit.shared
 
-import androidx.compose.material.icons.Icons
 
 
 object Resources{
@@ -43,6 +42,7 @@ object Resources{
         val FastRewind = R.drawable.fast_rewind
         val Add = R.drawable.add
         val Broken = R.drawable.broken_image
+        val Filter = R.drawable.filter
     }
     object Image{
         val ShoppingCart = R.drawable.shopping_cart_image

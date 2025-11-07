@@ -703,13 +703,6 @@ fun UserFormInterface(
                 label = "New password"
             )
             CustomTextFieldWithLabel(
-                value = userForm.address?:"",
-                onValueChange = {
-                    viewModel.updateUserAddress(it)
-                },
-                label = "Address"
-            )
-            CustomTextFieldWithLabel(
                 value = userForm.dateOfBirth?.let {viewModel.getDateString(it)}?:"",
                 onValueChange = {},
                 enabled = false,
@@ -846,7 +839,8 @@ fun UserFormInterface(
         if (action == Action.CREATE)
             PrimaryButton(
                 text = "Create",
-                onClick = onConfirm
+                onClick = onConfirm,
+                modifier = Modifier.fillMaxWidth()
             )
     }
 

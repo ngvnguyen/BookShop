@@ -12,7 +12,7 @@ data class AuthorForm(
     val dateOfBirth:String="",
     val gender: Gender=Gender.MALE,
     val createdAt:String="",
-    val createdBy:String="",
+    val updatedAt:String="",
     val status:Status=Status.ACTIVE
 ){
     enum class Status{
@@ -27,6 +27,6 @@ fun AuthorResponseData.toAuthorForm() = AuthorForm(
     dateOfBirth = dateOfBirth?:"",
     gender = Gender.valueOf(gender),
     createdAt = createdAt,
-    createdBy = createdBy,
+    updatedAt = updatedAt?:"",
     status = AuthorForm.Status.valueOf(status)
 )

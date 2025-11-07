@@ -8,21 +8,13 @@ sealed class Screen(){
     @Serializable
     object Auth: Screen()
     @Serializable
-    object HomeGraph:Screen(){
-        @Serializable
-        object Home: Screen()
-        @Serializable
-        object Book: Screen()
-        @Serializable
-        object Cart: Screen()
-    }
-    @Serializable
     object Profile:Screen()
     @Serializable
     object ForgotPassword:Screen()
     @Serializable
     data class ResetPassword(val email:String): Screen()
-
+    @Serializable
+    object ChangePassword:Screen()
 
     @Serializable
     object Admin: Screen()
@@ -46,4 +38,20 @@ sealed class Screen(){
     @Serializable
     object ManagePublisher: Screen()
 
+    @Serializable
+    object HomeGraph:Screen(){
+        @Serializable
+        object Home: Screen()
+        @Serializable
+        object Book: Screen()
+        @Serializable
+        object Cart: Screen()
+    }
+
+    @Serializable
+    data class BookDetails(val bookId:Int): Screen()
+    @Serializable
+    object PickAddress: Screen()
+    @Serializable
+    object PickCoupon: Screen()
 }

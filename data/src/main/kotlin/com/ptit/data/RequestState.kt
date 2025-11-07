@@ -32,17 +32,13 @@ sealed class RequestState<out T> {
 
 @Composable
 fun <T >RequestState<T>.DisplayResult(
+    modifier: Modifier = Modifier,
     onSuccess:(@Composable (T)->Unit)? =null,
     onError:(@Composable (String)->Unit)? =null,
     onIdle:(@Composable ()->Unit)? =null,
     onLoading:(@Composable ()->Unit)? =null,
-    transitionSpec : ContentTransform? =
-        fadeIn(tween(durationMillis = 800))
-                + scaleIn(tween(durationMillis = 400))
-                togetherWith scaleOut(tween(durationMillis = 400))
-                + fadeOut(tween(durationMillis = 800)),
-    containerColor: Color = Color.Unspecified,
-    modifier: Modifier = Modifier
+    transitionSpec : ContentTransform? = fadeIn() togetherWith fadeOut(),
+    containerColor: Color = Color.Unspecified
 ){
     AnimatedContent(
         targetState = this,

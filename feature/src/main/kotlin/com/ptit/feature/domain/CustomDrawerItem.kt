@@ -12,9 +12,9 @@ enum class CustomDrawerItem(
         Resources.Icon.Person
     ),
 
-    Category(
-        "Category",
-        Resources.Icon.Category
+    ChangePassword(
+        "Change Password",
+        Resources.Icon.Key
     ),
 
     Logout(

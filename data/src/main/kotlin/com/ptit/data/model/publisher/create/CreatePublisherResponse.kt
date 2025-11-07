@@ -11,8 +11,8 @@ class CreatePublisherResponse {
         val address: String,
         @SerialName("created_at")
         val createdAt: String,
-        @SerialName("created_by")
-        val createdBy: String,
+        @SerialName("update_at")
+        val updatedAt: String?,
         @SerialName("email")
         val email: String,
         @SerialName("id")

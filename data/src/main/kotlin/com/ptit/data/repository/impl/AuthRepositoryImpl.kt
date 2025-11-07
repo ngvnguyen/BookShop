@@ -4,6 +4,7 @@ import android.util.Log
 import com.ptit.data.RequestState
 import com.ptit.data.api.AuthApi
 import com.ptit.data.model.ResponseEntity
+import com.ptit.data.model.auth.changepassword.ChangePasswordForm
 import com.ptit.data.model.auth.login.LoginForm
 import com.ptit.data.model.auth.createaccount.SignUpBody
 import com.ptit.data.model.auth.getaccount.AccountResponse
@@ -166,6 +167,28 @@ class AuthRepositoryImpl(private val authApi: AuthApi): AuthRepository {
                 newPassword = newPassword,
                 confirmNewPassword = newPassword
             ))
+            if (response.isSuccessful) return RequestState.SUCCESS(response.body()?:"Success")
+            response.errorBody()?.string()?.let {
+                return RequestState.ERROR(it)
+            }
+            return RequestState.ERROR("Unknown error")
+        }catch (e: SocketTimeoutException){
+            return RequestState.ERROR("Server not responding")
+        } catch (e: Exception){
+            e.printStackTrace()
+            return RequestState.ERROR("Network error")
+        }
+    }
+
+    override suspend fun changePassword(
+        accessToken: String,
+        changePasswordForm: ChangePasswordForm
+    ): RequestState<String> {
+        try{
+            val response = authApi.changePassword(
+                token = "Bearer $accessToken",
+                body = changePasswordForm
+            )
             if (response.isSuccessful) return RequestState.SUCCESS(response.body()?:"Success")
             response.errorBody()?.string()?.let {
                 return RequestState.ERROR(it)

@@ -1,20 +1,17 @@
 package com.ptit.feature.component
 
-import android.R
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -22,20 +19,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.ptit.feature.form.BookForm
 import com.ptit.shared.Alpha
@@ -50,9 +42,10 @@ fun BookCard(
     modifier: Modifier = Modifier,
     item: BookForm,
     onClick:()-> Unit,
-    cardHeight : Dp = 210.dp,
-    elevation : Dp = 0.dp
+    imageHeight : Dp = 160.dp,
+    elevation : Dp = 0.dp,
 ){
+    val cardWidth = imageHeight*0.66f
     Card(
         modifier = modifier
             .clickable(onClick = onClick),
@@ -76,8 +69,8 @@ fun BookCard(
         ) {
             Box(
                 modifier = Modifier
-                    .height(cardHeight)
-                    .aspectRatio(0.666f)
+                    .height(imageHeight)
+                    .aspectRatio(0.66f)
                     .border(width = 1.dp,color = Color.Black.copy(alpha = Alpha.HALF))
             ){
                 SubcomposeAsyncImage(
@@ -96,29 +89,35 @@ fun BookCard(
                     contentScale = ContentScale.Crop
                 )
             }
-
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = item.name,
-                fontSize = FontSize.EXTRA_REGULAR,
+                fontSize = FontSize.REGULAR,
                 color = TextSecondary,
-                maxLines = 2
+                maxLines = 1,
+                fontWeight = FontWeight.W500,
+                modifier = Modifier.width(cardWidth)
             )
 
             BadgedBox(
                 badge = {
                     Text(
                         text = "-${item.discount}%",
-                        fontSize = FontSize.EXTRA_SMALL,
+                        fontSize = 8.sp,
                         modifier = Modifier.padding(start = 8.dp),
-                        color = Color.Red
+                        color = Color.Red,
+                        fontStyle = FontStyle.Italic,
+                        maxLines = 1
                     )
                 },
                 modifier = Modifier
                     .padding(end = 8.dp)
             ) {
                 Text(
-                    text = "${item.price.toInt()} vnd",
-                    fontSize = FontSize.REGULAR
+                    text = "${item.price.toInt()} ₫",
+                    fontSize = FontSize.SMALL,
+                    modifier = Modifier.widthIn(max = cardWidth),
+                    maxLines = 1
                 )
             }
 

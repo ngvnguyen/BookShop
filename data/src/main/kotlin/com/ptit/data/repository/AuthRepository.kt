@@ -2,6 +2,7 @@ package com.ptit.data.repository
 
 import com.ptit.data.RequestState
 import com.ptit.data.model.ResponseEntity
+import com.ptit.data.model.auth.changepassword.ChangePasswordForm
 import com.ptit.data.model.auth.createaccount.SignUpBody
 import com.ptit.data.model.auth.getaccount.AccountResponse
 import com.ptit.data.model.auth.login.LoginForm
@@ -16,4 +17,5 @@ interface AuthRepository {
     suspend fun sendOTP(email:String): RequestState<String>
     suspend fun verifyOTP(otp:String): RequestState<String>
     suspend fun resetPassword(resetToken:String,newPassword:String): RequestState<String>
+    suspend fun changePassword(accessToken: String, changePasswordForm: ChangePasswordForm): RequestState<String>
 }

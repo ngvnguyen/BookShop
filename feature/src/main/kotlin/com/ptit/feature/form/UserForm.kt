@@ -12,7 +12,6 @@ data class UserForm(
     val id:Int = 0,
     val name:String="",
     val phone:String?="",
-    val address :String?="",
     val email:String="",
     val password:String="",
     val roleId:Int = 1,
@@ -25,7 +24,6 @@ data class UserForm(
     val maxPage :Int=1
 )
 fun UserForm.toUpdateUserForm()= UpdateUserForm(
-    address = address,
     avatar = avatarUrl,
     dateOfBirth = dateOfBirth?.toString(),
     email = email,
@@ -38,7 +36,6 @@ fun UserForm.toUpdateUserForm()= UpdateUserForm(
 )
 
 fun UserForm.toCreateUserForm() = CreateUserForm(
-    address = address,
     avatar = avatarUrl,
     dateOfBirth = dateOfBirth?.toString(),
     email = email,
@@ -54,7 +51,6 @@ fun UserResponseData.toUserForm(page:Int,maxPage: Int) = UserForm(
     id =id,
     name = name,
     phone = phone,
-    address = address,
     email = email,
     password = "",
     roleId = role?.id?:0,

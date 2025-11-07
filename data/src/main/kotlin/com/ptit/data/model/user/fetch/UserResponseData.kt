@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserResponseData(
-    @SerialName("address")
-    val address: String?,
     @SerialName("avatar_url")
     val avatarUrl: String?,
     @SerialName("created_at")

@@ -244,10 +244,14 @@ fun ManageBookScreen(
                 }
                 Spacer(modifier = Modifier.weight(1f))
 
-                PrimaryButton(text = "Search") {
-                    adminViewModel.submitSearchBookParams()
-                    searchBarOpened = false
-                }
+                PrimaryButton(
+                    text = "Search",
+                    onClick =  {
+                        adminViewModel.submitSearchBookParams()
+                        searchBarOpened = false
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
             }
         }else{
@@ -451,7 +455,8 @@ fun BookAlertDialog(
                         quantity = quantity.toIntOrNull() ?: 0
                     )
                     onConfirm()
-                }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
         },
         text = {

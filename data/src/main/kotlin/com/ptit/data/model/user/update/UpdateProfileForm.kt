@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UpdateProfileForm(
-    @SerialName("address")
-    val address: String?,
     @SerialName("avatar")
     val avatar: String?=null,
     @SerialName("dateOfBirth")

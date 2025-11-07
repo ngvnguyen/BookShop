@@ -2,10 +2,13 @@ package com.ptit.data.retrofit
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ptit.data.BuildConfig
+import com.ptit.data.api.AddressApi
 import com.ptit.data.api.AuthApi
 import com.ptit.data.api.AuthorApi
 import com.ptit.data.api.BookApi
+import com.ptit.data.api.CartApi
 import com.ptit.data.api.CategoryApi
+import com.ptit.data.api.CouponApi
 import com.ptit.data.api.FileApi
 import com.ptit.data.api.PermissionApi
 import com.ptit.data.api.PublisherApi
@@ -20,7 +23,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import kotlin.getValue
 
 object RetrofitInstance {
-    private val BaseUrl = BuildConfig.BASE_URL
+    private const val BaseUrl = BuildConfig.BASE_URL
     private val interceptor = HttpLoggingInterceptor().apply{
         level = HttpLoggingInterceptor.Level.BODY
     }
@@ -63,5 +66,14 @@ object RetrofitInstance {
     }
     val fileApi by lazy {
         retrofit.create(FileApi::class.java)
+    }
+    val cartApi by lazy{
+        retrofit.create(CartApi::class.java)
+    }
+    val addressApi by lazy{
+        retrofit.create(AddressApi::class.java)
+    }
+    val couponApi by lazy{
+        retrofit.create(CouponApi::class.java)
     }
 }

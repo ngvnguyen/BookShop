@@ -1,42 +1,44 @@
 package com.ptit.feature.viewmodel
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
-import com.ptit.feature.SessionManager
-import com.ptit.data.model.permisson.fetch.PermissionResponseData
+import com.ptit.data.model.cart.CartData
+import com.ptit.data.repository.AddressRepository
+import com.ptit.feature.util.SessionManager
 import com.ptit.data.repository.AuthRepository
 import com.ptit.data.repository.BookRepository
+import com.ptit.data.repository.CartRepository
 import com.ptit.data.repository.CategoryRepository
-import com.ptit.data.repository.PermissionRepository
 import com.ptit.data.repository.PublisherRepository
-import com.ptit.data.repository.RoleRepository
+import com.ptit.feature.domain.FilterPriceItem
+import com.ptit.feature.form.AddressForm
 import com.ptit.feature.form.BookForm
 import com.ptit.feature.form.CategoryForm
 import com.ptit.feature.form.toBookForm
 import com.ptit.feature.form.toCategoryForm
-import com.ptit.feature.permission.Permission
-import com.ptit.feature.permission.toPermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.ptit.feature.form.toAddressForm
+import com.ptit.feature.util.SharedState
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
@@ -44,7 +46,11 @@ class HomeViewModel(
     private val sessionManager: SessionManager,
     private val categoryRepository: CategoryRepository,
     private val bookRepository: BookRepository,
-    private val publisherRepository: PublisherRepository
+    private val publisherRepository: PublisherRepository,
+    private val cartRepository: CartRepository,
+    private val addressRepository: AddressRepository,
+    private val savedStateHandle: SavedStateHandle,
+    private val sharedState: SharedState
 ): ViewModel() {
     var searchQuery by mutableStateOf("")
     val permissions get() = sessionManager.permissions
@@ -53,13 +59,15 @@ class HomeViewModel(
     private val accessTokenFlow
         get() = sessionManager.accessToken
     private var accessToken = ""
+    val couponCode:String?
+        get() = sharedState.couponCode
 
-    private val refreshTrigger = MutableStateFlow(0)
-
-
+    private val homeRefreshTrigger = MutableStateFlow(0)
+    var isRefreshing by mutableStateOf(false)
+    val addressId = savedStateHandle.getStateFlow("address_id",-1)
 
     val allCategory: StateFlow<RequestState<List<CategoryForm>>> =
-        combine(accessTokenFlow,refreshTrigger) { token, _->
+        combine(accessTokenFlow,homeRefreshTrigger) { token, _->
             token
         }.flatMapLatest { token->
             flow {
@@ -79,7 +87,7 @@ class HomeViewModel(
             initialValue = RequestState.LOADING
         )
 
-    val bookPaged: StateFlow<RequestState<List<BookForm>>> = combine(accessTokenFlow,refreshTrigger) {token,_->
+    val bookPaged: StateFlow<RequestState<List<BookForm>>> = combine(accessTokenFlow,homeRefreshTrigger) { token, _->
         token
     }.flatMapLatest { token->
         flow {
@@ -94,14 +102,86 @@ class HomeViewModel(
                         )
                     )
                 }
-                else emit(RequestState.ERROR(response.getErrorMessage()))
+                else {
+                    emit(RequestState.ERROR(response.getErrorMessage()))
+                }
             }
         }.flowOn(Dispatchers.IO)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = RequestState.LOADING
+    )
+
+    var cartSearchQuery = MutableStateFlow("") ;private set
+    val cartRefreshTrigger = MutableStateFlow(0)
+    private val cart: StateFlow<RequestState<CartData>> = combine(cartRefreshTrigger,accessTokenFlow){_,token->
+        token
+    }.flatMapLatest {token->
+        flow {
+            token?.let {
+                val response = cartRepository.getCart(token)
+                emit(response)
+            }
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = RequestState.LOADING
     )
+    val isCartEmpty: StateFlow<Boolean> = cart.map { cartState->
+        if (cartState.isSuccess()) cartState.getSuccessData().cartItems.isEmpty()
+        else true
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = true
+    )
+    val cartItemFilter: StateFlow<RequestState<List<CartData.CartItem>>> = combine(cartSearchQuery,cart) {query,cart->
+        query to cart
+    }.flatMapLatest { (query,cart)->
+        flow {
+            if (cart.isSuccess()){
+                val cartItems = cart.getSuccessData().cartItems.filter {
+                    if (query.isBlank()) true
+                    else it.productName.lowercase().contains(query.lowercase())
+                }
+                emit(RequestState.SUCCESS(cartItems))
+            }else if (cart.isLoading()) emit(RequestState.LOADING)
+            else emit(RequestState.ERROR(cart.getErrorMessage()))
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = RequestState.LOADING
+    )
+    private val allAddress : StateFlow<RequestState<List<AddressForm>>>
+        = combine(accessTokenFlow,addressId,cartRefreshTrigger){token,_,_-> token
+    }.flatMapLatest { token->
+        flow {
+            emit(RequestState.LOADING)
+            if (token!=null){
+                val response = addressRepository.getAllAddress(accessToken)
+                if (response.isSuccess())
+                    emit(RequestState.SUCCESS(response.getSuccessData().map { it.toAddressForm() }))
+                else emit(RequestState.ERROR(response.getErrorMessage()))
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = RequestState.LOADING
+    )
+    val address : StateFlow<AddressForm?> = allAddress.map { all->
+        if (all.isSuccess()) all.getSuccessData().firstOrNull { it.isDefault }
+        else null
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
+    val selectedIds = mutableStateSetOf<Int>()
 
     init{
         viewModelScope.launch {
@@ -109,8 +189,92 @@ class HomeViewModel(
         }
     }
 
+    var filterPriceItem : FilterPriceItem? by mutableStateOf(null)
+    fun selectFilterPriceItem(item: FilterPriceItem?){
+        filterPriceItem = item
+    }
+
     fun updateSearchQuery(query: String) {
         searchQuery = query
+    }
+    fun updateCartSearchQuery(query: String){
+        cartSearchQuery.value = query
+    }
+    fun homeRefresh(){
+        viewModelScope.launch {
+            isRefreshing = true
+            homeRefreshTrigger.value++
+            delay(100)
+            isRefreshing = false
+        }
+    }
+    fun bookRefresh(){
+        viewModelScope.launch {
+            isRefreshing = true
+            homeRefreshTrigger.value++
+            delay(100)
+            isRefreshing = false
+        }
+    }
+    fun cartRefresh(){
+        viewModelScope.launch {
+            isRefreshing = true
+            cartRefreshTrigger.value++
+            delay(100)
+            isRefreshing = false
+        }
+    }
+    fun updateCartItemQuantity(
+        productId:Int,quantity:Int,
+        onSuccess:suspend ()->Unit,
+        onError:suspend (String)-> Unit
+    ){
+        viewModelScope.launch {
+            val result = cartRepository.updateCartItem(
+                accessToken = accessToken,
+                productId = productId,
+                quantity = quantity
+            )
+            if (result.isSuccess()){
+                onSuccess()
+                cartRefreshTrigger.value++
+            }else onError(result.getErrorMessage())
+        }
+    }
+    fun deleteCartItem(
+        productId:Int,
+        onSuccess: suspend () -> Unit,
+        onError: suspend (String) -> Unit
+    ){
+        viewModelScope.launch {
+            val result = cartRepository.deleteCartItem(
+                accessToken = accessToken,
+                productId = productId
+            )
+            if (result.isSuccess()){
+                onSuccess()
+                if (selectedIds.contains(productId)){
+                    selectedIds.remove(productId)
+                }
+                cartRefreshTrigger.value++
+            }else onError(result.getErrorMessage())
+        }
+    }
+    fun selectCartItem(productId: Int){
+        selectedIds.add(productId)
+    }
+    fun removeCartItemSelection(productId: Int){
+        selectedIds.remove(productId)
+    }
+    fun clearAllCartItemSelection(){
+        selectedIds.clear()
+    }
+    fun selectAllCartItem(){
+        clearAllCartItemSelection()
+        val ids = if (cartItemFilter.value.isSuccess()){
+            cartItemFilter.value.getSuccessData().map { it.id }
+        }else listOf()
+        selectedIds.addAll(ids)
     }
 
     fun signOut(

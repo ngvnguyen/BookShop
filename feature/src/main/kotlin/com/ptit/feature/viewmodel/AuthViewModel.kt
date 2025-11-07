@@ -1,23 +1,19 @@
 package com.ptit.feature.viewmodel
 
 import android.app.Application
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 
-import androidx.core.content.edit
 import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
-import com.ptit.feature.SessionManager
+import com.ptit.feature.util.SessionManager
 import com.ptit.data.model.auth.login.LoginForm
 import com.ptit.data.model.auth.createaccount.SignUpBody
-import com.ptit.data.model.auth.login.LoginResponse
 import com.ptit.data.repository.AuthRepository
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 
 enum class AuthTarget{

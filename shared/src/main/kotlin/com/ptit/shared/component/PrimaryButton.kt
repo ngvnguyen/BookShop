@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,19 +30,20 @@ fun PrimaryButton(
     text: String,
     @DrawableRes icon: Int?=null,
     enabled: Boolean=true,
-    onClick:()->Unit
+    onClick:()->Unit,
+    containerColor: Color = ButtonPrimary
 ){
     Button(
         onClick= onClick,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = ButtonPrimary,
+            containerColor = containerColor,
             contentColor = TextPrimary,
             disabledContainerColor = ButtonDisabled,
             disabledContentColor = TextPrimary.copy(alpha = Alpha.DISABLE)
         ),
         shape = RoundedCornerShape(6.dp),
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         contentPadding = PaddingValues(20.dp)
     ) {
         icon?.let { i->
@@ -50,8 +52,8 @@ fun PrimaryButton(
                 contentDescription = "Button icon",
                 modifier = Modifier.size(14.dp)
             )
+            Spacer(modifier = Modifier.width(12.dp))
         }
-        Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = text,
             fontSize = FontSize.REGULAR,

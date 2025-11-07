@@ -14,7 +14,7 @@ data class CreateBookForm(
     val description: String,
     @SerialName("discount")
     val discount: Double,
-    @SerialName("image")
+    @SerialName("image_url")
     val image: String,
     @SerialName("language")
     val language: String,
@@ -25,9 +25,7 @@ data class CreateBookForm(
     @SerialName("publisher")
     val publisher: Publisher,
     @SerialName("quantity")
-    val quantity: Int,
-    @SerialName("title")
-    val title: String
+    val quantity: Int
 ) {
     @Serializable
     data class Author(

@@ -13,8 +13,8 @@ class UpdateBookResponse {
         val category: Category,
         @SerialName("created_at")
         val createdAt: String,
-        @SerialName("created_by")
-        val createdBy: String,
+        @SerialName("update_at")
+        val updatedAt: String?,
         @SerialName("description")
         val description: String,
         @SerialName("discount")
@@ -23,7 +23,7 @@ class UpdateBookResponse {
         val finalPrice: Double,
         @SerialName("id")
         val id: Int,
-        @SerialName("image")
+        @SerialName("image_url")
         val image: String,
         @SerialName("language")
         val language: String,
@@ -36,9 +36,7 @@ class UpdateBookResponse {
         @SerialName("quantity")
         val quantity: Int,
         @SerialName("status")
-        val status: String,
-        @SerialName("title")
-        val title: String
+        val status: String
     ) {
         @Serializable
         data class Author(
