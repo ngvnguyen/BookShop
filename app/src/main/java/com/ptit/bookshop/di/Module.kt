@@ -6,6 +6,7 @@ import com.ptit.data.repository.AuthorRepository
 import com.ptit.data.repository.BookRepository
 import com.ptit.data.repository.CartRepository
 import com.ptit.data.repository.CategoryRepository
+import com.ptit.data.repository.CheckoutRepository
 import com.ptit.data.repository.CouponRepository
 import com.ptit.data.repository.FileRepository
 import com.ptit.data.repository.PermissionRepository
@@ -18,6 +19,7 @@ import com.ptit.data.repository.impl.AuthorRepositoryImpl
 import com.ptit.data.repository.impl.BookRepositoryImpl
 import com.ptit.data.repository.impl.CartRepositoryImpl
 import com.ptit.data.repository.impl.CategoryRepositoryImpl
+import com.ptit.data.repository.impl.CheckoutRepositoryImpl
 import com.ptit.data.repository.impl.CouponRepositoryImpl
 import com.ptit.data.repository.impl.FileRepositoryImpl
 import com.ptit.data.repository.impl.PermissionRepositoryImpl
@@ -33,6 +35,7 @@ import com.ptit.feature.viewmodel.AdminViewModel
 import com.ptit.feature.viewmodel.AuthViewModel
 import com.ptit.feature.viewmodel.BookDetailsViewModel
 import com.ptit.feature.viewmodel.ChangePasswordViewModel
+import com.ptit.feature.viewmodel.CheckoutViewModel
 import com.ptit.feature.viewmodel.CouponViewModel
 import com.ptit.feature.viewmodel.HomeViewModel
 import com.ptit.feature.viewmodel.ProfileViewModel
@@ -56,6 +59,7 @@ val module = module{
     single<CartRepository> { CartRepositoryImpl(RetrofitInstance.cartApi) }
     single<AddressRepository> { AddressRepositoryImpl(RetrofitInstance.addressApi) }
     single<CouponRepository> { CouponRepositoryImpl(RetrofitInstance.couponApi) }
+    single<CheckoutRepository> { CheckoutRepositoryImpl(RetrofitInstance.checkoutApi) }
 
     single<CoroutineScope>{ CoroutineScope(SupervisorJob()+ Dispatchers.IO) }
     single<SessionManager>{ SessionManager(get(),get(),get(),get(),get()) }
@@ -71,4 +75,5 @@ val module = module{
     viewModelOf(::ChangePasswordViewModel)
     viewModelOf(::AddressViewModel)
     viewModelOf(::CouponViewModel)
+    viewModelOf(::CheckoutViewModel)
 }

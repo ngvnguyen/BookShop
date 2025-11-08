@@ -79,7 +79,7 @@ fun HomeScreen(
     var drawerState by remember { mutableStateOf(DrawerState.Closed) }
     val coroutineScope = rememberCoroutineScope()
     val filterPriceItem = viewModel.filterPriceItem
-    val searchQuery = viewModel.searchQuery
+    val bookFilterName = viewModel.bookName
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
     var isRefreshing = viewModel.isRefreshing
@@ -104,10 +104,11 @@ fun HomeScreen(
                 TopAppBar(
                     title = {
                         CustomSearchBar(
-                            value = searchQuery,
-                            onValueChange = {viewModel.updateSearchQuery(it)},
+                            value = bookFilterName,
+                            onValueChange = {viewModel.updateBookFilterName(it)},
                             onSearch = {
-
+                                viewModel.submitBookFilterName()
+                                navigateToBook()
                             },
                             onFocusChange = {state->
                                 isFocused = state.isFocused
@@ -118,7 +119,10 @@ fun HomeScreen(
                                     contentDescription = "Search",
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(16.dp))
-                                        .clickable(onClick={})
+                                        .clickable(onClick={
+                                            viewModel.submitBookFilterName()
+                                            navigateToBook()
+                                        })
                                 )
                             },
                             placeholder = "Search books"
@@ -238,7 +242,9 @@ fun HomeScreen(
             visible = drawerState.isOpened(),
             onCloseClick = {drawerState = drawerState.opposite()},
             onFilterClick = {
+                viewModel.submitFilter()
                 drawerState = drawerState.opposite()
+                navigateToBook()
             },
             checkedItem = filterPriceItem,
             onSelectFilterPriceItem = {isChecked,filterPriceItem->

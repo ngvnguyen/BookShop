@@ -115,7 +115,8 @@ fun HomeGraphScreen(
     navigateToBookDetails:(Int)->Unit,
     navigateToChangePassword:()->Unit,
     navigateToPickAddress:()->Unit,
-    navigateToPickCoupon:()-> Unit
+    navigateToPickCoupon:()-> Unit,
+    navigateToCheckout:()->Unit
 ){
     val context = LocalContext.current
     val homeViewModel = koinViewModel<HomeViewModel>()
@@ -229,7 +230,14 @@ fun HomeGraphScreen(
                             onDrawerClick = {drawerState = drawerState.opposite()},
                             navigateToBookDetails = navigateToBookDetails,
                             navigateToBook = {
-                                navController.navigate(Screen.HomeGraph.Book)
+                                navController.navigate(Screen.HomeGraph.Book){
+                                    launchSingleTop = true
+                                    popUpTo<Screen.HomeGraph.Home>{
+                                        inclusive = false
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
                             },
                             viewModel = homeViewModel
                         )
@@ -245,10 +253,10 @@ fun HomeGraphScreen(
                     composable<Screen.HomeGraph.Cart> {
                         CartScreen(
                             navigateToBookDetails = navigateToBookDetails,
-                            navigateToCheckOut = {},
                             viewModel = homeViewModel,
                             navigateToPickAddress = navigateToPickAddress,
-                            navigateToPickCoupon = navigateToPickCoupon
+                            navigateToPickCoupon = navigateToPickCoupon,
+                            navigateToCheckout = navigateToCheckout
                         )
                     }
                 }

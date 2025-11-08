@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import com.ptit.data.DisplayResult
 import com.ptit.data.model.cart.CartData
+import com.ptit.feature.component.CartItemCard
 import com.ptit.feature.viewmodel.HomeViewModel
 import com.ptit.shared.Alpha
 import com.ptit.shared.ButtonPrimary
@@ -87,7 +88,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CartScreen(
     modifier: Modifier=Modifier,
-    navigateToCheckOut:()->Unit,
+    navigateToCheckout:()->Unit,
     navigateToBookDetails:(Int)->Unit,
     navigateToPickAddress:()->Unit,
     navigateToPickCoupon:()->Unit,
@@ -198,12 +199,13 @@ fun CartScreen(
                                 LazyColumn(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(8.dp)
+                                        .padding(8.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     stickyHeader {
                                         Row(
                                             modifier = Modifier
-                                                .padding(12.dp)
+                                                .padding(start = 12.dp)
                                                 .fillMaxWidth(),
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -366,11 +368,15 @@ fun CartScreen(
                                         )
                                         Spacer(modifier = Modifier.weight(1f))
                                         Button(
-                                            onClick = {navigateToCheckOut()},
+                                            onClick = {
+                                                viewModel.checkout()
+                                                navigateToCheckout()
+                                            },
                                             shape = RoundedCornerShape(12.dp),
                                             colors = ButtonDefaults.buttonColors(
                                                 containerColor = ButtonPrimary
-                                            )
+                                            ),
+                                            enabled = selectedIds.isNotEmpty()
                                         ) {
                                             Text(
                                                 text = "Check out",
@@ -404,115 +410,4 @@ fun CartScreen(
         }
 
     }
-}
-
-@Composable
-fun CartItemCard(
-    modifier: Modifier= Modifier,
-    item: CartData.CartItem,
-    checked:Boolean,
-    onCheckedChange:(Boolean)->Unit,
-    onItemClick:()->Unit,
-    onMinusClick:(Int)->Unit,
-    onPlusClick:(Int)->Unit,
-    onDeleteClick:()->Unit
-){
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .border(
-                width = 1.dp,
-                color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT),
-                shape = RoundedCornerShape(8.dp)
-            )
-            .clickable(onClick = onItemClick)
-    ){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .height(120.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Checkbox(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            SubcomposeAsyncImage(
-                model = item.imageUrl,
-                loading = {
-                    LoadingCard()
-                },
-                error = {
-                    Image(
-                        painter = painterResource(Resources.Icon.Broken),
-                        contentDescription = "broken image"
-                    )
-                },
-                contentDescription = "book image",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(0.666f),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                Text(
-                    text = item.productName,
-                    fontSize = FontSize.EXTRA_REGULAR,
-                    fontWeight = FontWeight.W500
-                )
-                Text(
-                    text = "-${item.discount}%",
-                    fontSize = FontSize.EXTRA_SMALL,
-                    fontWeight = FontWeight.W300,
-                    color = TextSecondary,
-                    fontStyle = FontStyle.Italic
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "${item.finalPrice}",
-                        fontSize = FontSize.REGULAR,
-                        color = TextSecondary
-                    )
-                    Text(
-                        text = " ₫",
-                        fontSize = FontSize.SMALL
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    QuantityCounter(
-                        size = QuantityCounterSize.Small,
-                        value = item.quantity,
-                        onMinusClick = onMinusClick,
-                        onPlusClick = onPlusClick
-                    )
-                }
-            }
-        }
-
-        IconButton(
-            onClick = {
-                onDeleteClick()
-            },
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Icon(
-                painter = painterResource(Resources.Icon.Delete),
-                contentDescription = "delete"
-            )
-        }
-
-    }
-
-
 }

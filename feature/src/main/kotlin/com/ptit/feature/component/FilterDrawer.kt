@@ -1,6 +1,7 @@
 package com.ptit.feature.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -62,20 +63,20 @@ fun BoxScope.FilterDrawer(
             .fillMaxHeight()
             .fillMaxWidth(0.7f)
             .align(Alignment.CenterEnd)
-            .background(SurfaceLighter)
             .clip(RoundedCornerShape(16.dp))
             .border(
                 width = 1.dp,
                 color = Color.Black.copy(alpha = Alpha.TEN_PERCENT),
                 shape = RoundedCornerShape(16.dp)
             )
+            .background(SurfaceLighter)
             .clickable(
                 onClick = {},
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ),
-        enter = slideInHorizontally(initialOffsetX = {it})+ fadeIn(),
-        exit = slideOutHorizontally(targetOffsetX = {it})+ fadeOut()
+        enter = slideInHorizontally(initialOffsetX = {it}, animationSpec = tween(100))+ fadeIn(animationSpec = tween(100)),
+        exit = slideOutHorizontally(targetOffsetX = {it}, animationSpec = tween(100))+ fadeOut(animationSpec = tween(100))
     ) {
         Column(
             modifier = Modifier

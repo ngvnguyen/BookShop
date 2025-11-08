@@ -47,6 +47,7 @@ interface BookApi {
     suspend fun getBookPaged(
         @Header("Authorization") token: String,
         @Query("page") page:Int=0,
+        @Query("size") size:Int = 20,
         @Query("book") bookName:String?=null,
         @Query("category") categoryName:String?=null,
         @Query("author") authorName:String?=null

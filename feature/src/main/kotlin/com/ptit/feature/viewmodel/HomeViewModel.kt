@@ -4,11 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
 import com.ptit.data.model.cart.CartData
+import com.ptit.data.model.checkout.CheckoutRequest
 import com.ptit.data.repository.AddressRepository
 import com.ptit.feature.util.SessionManager
 import com.ptit.data.repository.AuthRepository
@@ -40,6 +42,14 @@ import kotlinx.coroutines.launch
 import com.ptit.feature.form.toAddressForm
 import com.ptit.feature.util.SharedState
 
+data class BookFilter(
+    val name:String="",
+    val categories:List<String> =listOf(),
+    val authors: List<String> =listOf(),
+    val upperPrice:Int?=null,
+    val lowerPrice:Int?=null
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val authRepository: AuthRepository,
@@ -52,7 +62,6 @@ class HomeViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val sharedState: SharedState
 ): ViewModel() {
-    var searchQuery by mutableStateOf("")
     val permissions get() = sessionManager.permissions
     val isAdminUnlocked
         get() = permissions.value.isNotEmpty()
@@ -64,7 +73,7 @@ class HomeViewModel(
 
     private val homeRefreshTrigger = MutableStateFlow(0)
     var isRefreshing by mutableStateOf(false)
-    val addressId = savedStateHandle.getStateFlow("address_id",-1)
+    val addressId = snapshotFlow { sharedState.addressId }
 
     val allCategory: StateFlow<RequestState<List<CategoryForm>>> =
         combine(accessTokenFlow,homeRefreshTrigger) { token, _->
@@ -86,14 +95,24 @@ class HomeViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = RequestState.LOADING
         )
-
-    val bookPaged: StateFlow<RequestState<List<BookForm>>> = combine(accessTokenFlow,homeRefreshTrigger) { token, _->
-        token
-    }.flatMapLatest { token->
+    var bookName by mutableStateOf("")
+    val bookFilter = MutableStateFlow(BookFilter())
+    val bookPaged: StateFlow<RequestState<List<BookForm>>>
+        = combine(accessTokenFlow,bookFilter,homeRefreshTrigger) { token,bookFilter, _->
+        token to bookFilter
+    }.flatMapLatest { (token,bookFilter)->
         flow {
             emit(RequestState.LOADING)
             token?.let {
-                val response = bookRepository.searchBookPaged(token,1,"","","")
+                val response = bookRepository.searchBookPaged(
+                    accessToken = token,
+                    page = 1,
+                    name = bookFilter.name,
+                    categoryQuery = bookFilter.categories,
+                    authorQuery = bookFilter.authors,
+                    lowerPrice = bookFilter.lowerPrice,
+                    upperPrice = bookFilter.upperPrice
+                )
                 if (response.isSuccess()){
                     val data = response.getSuccessData()
                     emit(
@@ -193,9 +212,40 @@ class HomeViewModel(
     fun selectFilterPriceItem(item: FilterPriceItem?){
         filterPriceItem = item
     }
+    fun submitFilter(){
+        val lower = filterPriceItem?.maxPrice?.replace(".","")?.toIntOrNull()
+        val upper = filterPriceItem?.minPrice?.replace(".","")?.toIntOrNull()
+        bookFilter.value = bookFilter.value.copy(upperPrice = upper, lowerPrice = lower)
+    }
+    fun updateBookFilterName(name:String){
+        bookName = name
+    }
+    fun submitBookFilterName(){
+        bookFilter.value = bookFilter.value.copy(name = bookName)
+    }
 
-    fun updateSearchQuery(query: String) {
-        searchQuery = query
+    fun onBookFilterCategory(category:String){
+        val current = bookFilter.value.categories.toMutableList()
+        if (current.contains(category)){
+            current.remove(category)
+            bookFilter.value = bookFilter.value.copy(categories = current)
+        }
+        else {
+            current.add(category)
+            bookFilter.value = bookFilter.value.copy(categories = current)
+        }
+    }
+
+    fun addBookFilterAuthor(author:String){
+        val current = bookFilter.value.authors.toMutableList()
+        if (current.contains(author)){
+            current.remove(author)
+            bookFilter.value = bookFilter.value.copy(authors = current)
+        }
+        else {
+            current.add(author)
+            bookFilter.value = bookFilter.value.copy(authors = current)
+        }
     }
     fun updateCartSearchQuery(query: String){
         cartSearchQuery.value = query
@@ -275,6 +325,13 @@ class HomeViewModel(
             cartItemFilter.value.getSuccessData().map { it.id }
         }else listOf()
         selectedIds.addAll(ids)
+    }
+
+    fun checkout(){
+        val ids = selectedIds.toList().map { CheckoutRequest.CartItem(it) }
+        val discountCode = couponCode
+        val checkoutRequest = CheckoutRequest(ids,discountCode)
+        sharedState.checkoutRequest = checkoutRequest
     }
 
     fun signOut(

@@ -70,7 +70,7 @@ import kotlin.math.exp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PickAddressScreen(
-    navigateBack:(Int)->Unit
+    navigateBack:()->Unit
 ){
     val viewModel = koinViewModel<AddressViewModel>()
     val allAddress by viewModel.allAddress.collectAsState()
@@ -91,7 +91,8 @@ fun PickAddressScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navigateBack(-1)
+                        viewModel.submitAddress(-1)
+                        navigateBack()
                     }) {
                         Icon(
                             painter = painterResource(Resources.Icon.BackArrow),
@@ -129,7 +130,7 @@ fun PickAddressScreen(
                             key = {it.id}
                         ) {address->
                             var expanded by remember { mutableStateOf(false) }
-                            Box(){
+                            Box{
                                 AddressCard(
                                     address = address,
                                     isSelected = (selectedId==-1 && address.isDefault) || (selectedId == address.id),
@@ -216,7 +217,8 @@ fun PickAddressScreen(
                         onClick = {
                             viewModel.submitAddress(
                                 onSuccess = {
-                                    navigateBack(selectedId)
+                                    viewModel.submitAddress(selectedId)
+                                    navigateBack()
                                 },
                                 onError = {e->
                                     Toast.makeText(context,e,Toast.LENGTH_SHORT).show()

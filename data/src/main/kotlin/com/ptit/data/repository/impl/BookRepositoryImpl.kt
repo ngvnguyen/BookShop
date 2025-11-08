@@ -67,19 +67,31 @@ class BookRepositoryImpl(private val bookApi: BookApi): BookRepository {
             return RequestState.ERROR("Network error")
         }
     }
-
+    fun createQuery(query: List<String>): String {
+        return query.joinToString(separator = ",") { "name~$it" }
+    }
+    fun createBookQuery(
+        name:String,
+        lowerPrice: Int?,
+        upperPrice: Int?
+    ):String{
+        return "name~$name"+ (lowerPrice?.let {",price<$it"}?:"")+ (upperPrice?.let {",price>$it"}?:"")
+    }
     override suspend fun searchBookPaged(
         accessToken: String,
         page: Int,
+        pageSize: Int,
         name: String,
-        category: String,
-        author: String
+        categoryQuery: List<String>,
+        authorQuery: List<String>,
+        upperPrice: Int?,
+        lowerPrice: Int?
     ): RequestState<FetchBookPagedResponse.Data> {
         try {
-            val nameQuery = "name~${name}"
-            val categoryQuery = "name~${category}"
-            val authorQuery = "name~${author}"
-            val response = bookApi.getBookPaged("Bearer $accessToken",page,nameQuery,categoryQuery,authorQuery)
+            val bookQuery = createBookQuery(name,lowerPrice,upperPrice)
+            val categoryQuery = createQuery(categoryQuery)
+            val authorQuery = createQuery(authorQuery)
+            val response = bookApi.getBookPaged("Bearer $accessToken",page,pageSize,bookQuery,categoryQuery,authorQuery)
             if (response.isSuccessful){
                 val data = response.body()?.data
                 data?.let { return RequestState.SUCCESS(it) }

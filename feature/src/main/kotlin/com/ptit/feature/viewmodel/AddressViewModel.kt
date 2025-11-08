@@ -13,6 +13,7 @@ import com.ptit.feature.util.SessionManager
 import com.ptit.feature.form.AddressForm
 import com.ptit.feature.form.toAddressForm
 import com.ptit.feature.form.toAddressRequestForm
+import com.ptit.feature.util.SharedState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,11 +26,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okhttp3.Address
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddressViewModel(
     private val addressRepository: AddressRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val sharedState: SharedState
 ): ViewModel() {
     private val accessTokenFlow
         get() = sessionManager.accessToken
@@ -61,7 +64,6 @@ class AddressViewModel(
     )
     var selectedAddressId by mutableIntStateOf(-1);private set
     val defaultId : StateFlow<Int?> = allAddress.map {addressState->
-        Log.d("Default Id",addressState.isSuccess().toString())
         if (addressState.isSuccess()) addressState.getSuccessData().firstOrNull {it.isDefault}?.id
         else null
     }.stateIn(
@@ -85,7 +87,9 @@ class AddressViewModel(
     fun selectAddress(address: AddressForm){
         addressForm = address
     }
-
+    fun submitAddress(addressId: Int){
+        sharedState.setAddress(addressId)
+    }
     fun resetAddressForm(){
         addressForm = AddressForm()
     }

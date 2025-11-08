@@ -13,6 +13,7 @@ import com.ptit.feature.screen.ResetPasswordScreen
 import com.ptit.feature.navigation.Screen
 import com.ptit.feature.screen.BookDetailsScreen
 import com.ptit.feature.screen.ChangePasswordScreen
+import com.ptit.feature.screen.CheckoutScreen
 import com.ptit.feature.screen.PickAddressScreen
 import com.ptit.feature.screen.PickCouponScreen
 import com.ptit.feature.screen.ProfileScreen
@@ -69,6 +70,9 @@ fun NavGraph(
                 },
                 navigateToPickCoupon = {
                     navController.navigate(Screen.PickCoupon)
+                },
+                navigateToCheckout = {
+                    navController.navigate(Screen.Checkout)
                 }
             )
         }
@@ -121,10 +125,7 @@ fun NavGraph(
         }
         composable<Screen.PickAddress> {
             PickAddressScreen(
-                navigateBack = {selectedId->
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("address_id",selectedId)
+                navigateBack = {
                     navController.navigateUp()
                 }
             )
@@ -136,7 +137,16 @@ fun NavGraph(
                 }
             )
         }
+        composable<Screen.Checkout> {
+            CheckoutScreen(
+                navigateBack = {
+                    navController.navigateUp()
+                },
+                navigateToSuccess = {
 
+                }
+            )
+        }
         adminNavGraph(navController)
     }
 }

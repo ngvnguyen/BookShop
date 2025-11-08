@@ -1,0 +1,355 @@
+package com.ptit.feature.screen
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.painterResource
+import com.ptit.feature.viewmodel.CheckoutViewModel
+import com.ptit.shared.FontSize
+import com.ptit.shared.Resources
+import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import coil.compose.SubcomposeAsyncImage
+import com.ptit.data.DisplayResult
+import com.ptit.data.model.checkout.CheckoutData
+import com.ptit.shared.Alpha
+import com.ptit.shared.QuantityCounterSize
+import com.ptit.shared.SurfaceDarker
+import com.ptit.shared.TextSecondary
+import com.ptit.shared.component.ErrorCard
+import com.ptit.shared.component.LoadingCard
+import com.ptit.shared.component.PrimaryButton
+import com.ptit.shared.component.QuantityCounter
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CheckoutScreen(
+    navigateBack:()->Unit,
+    navigateToSuccess:()-> Unit
+){
+    val viewModel = koinViewModel<CheckoutViewModel>()
+    val checkoutData by viewModel.checkoutData.collectAsState()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Checkout",
+                        fontSize = FontSize.MEDIUM
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navigateBack()
+                    }) {
+                        Icon(
+                            painter = painterResource(Resources.Icon.BackArrow),
+                            contentDescription = "Back Icon"
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        checkoutData.DisplayResult(
+            modifier = Modifier
+                .padding(
+                    top = padding.calculateTopPadding(),
+                    bottom = padding.calculateBottomPadding()
+                ),
+            onLoading = {
+                LoadingCard(modifier = Modifier.fillMaxSize())
+            },
+            onError = {e->
+                ErrorCard(message=e,modifier=Modifier.fillMaxSize())
+            },
+            onSuccess = {checkout->
+                Column {
+                    Text(
+                        text = "Receive address",
+                        color = TextSecondary,
+                        fontSize = FontSize.EXTRA_REGULAR,
+                        fontWeight = FontWeight.W500,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = checkout.shippingAddress.name,
+                                fontSize = FontSize.REGULAR,
+                                fontWeight = FontWeight.W500
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = checkout.shippingAddress.phone,
+                                fontSize = FontSize.REGULAR,
+                                fontWeight = FontWeight.W300,
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                        }
+                        Text(
+                            text = checkout.shippingAddress.address,
+                            fontSize = FontSize.SMALL,
+                            fontWeight = FontWeight.W300,
+                            color = Color.Black.copy(alpha = Alpha.HALF),
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
+                    Text(
+                        text = "Order details",
+                        color = TextSecondary,
+                        fontSize = FontSize.EXTRA_REGULAR,
+                        fontWeight = FontWeight.W500,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(320.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        itemsIndexed(
+                            items = checkout.items
+                        ) {index,item->
+                            if (index!=0) HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                            ProductCard(
+                                item = item
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Payment method",
+                            color = TextSecondary,
+                            fontSize = FontSize.EXTRA_REGULAR,
+                            fontWeight = FontWeight.W500,
+                        )
+                        Text(
+                            text = checkout.paymentMethods
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Coupon",
+                            color = TextSecondary,
+                            fontSize = FontSize.EXTRA_REGULAR,
+                            fontWeight = FontWeight.W500,
+                        )
+                        Text(
+                            text = checkout.couponInfo?.code?:"No coupon"
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                    Text(
+                        text = "Summary",
+                        color = TextSecondary,
+                        fontSize = FontSize.EXTRA_REGULAR,
+                        fontWeight = FontWeight.W500,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                    ) {
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Total quantity",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                            Text(
+                                text = "${checkout.summary.totalQuantity}",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Subtotal",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                            Text(
+                                text = "${checkout.summary.subtotal} ₫",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Discount",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                            Text(
+                                text = "-${checkout.summary.cartDiscount} ₫",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Shipping fee",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                            Text(
+                                text = "${checkout.summary.shippingFee} ₫",
+                                color = Color.Black.copy(alpha = Alpha.HALF)
+                            )
+                        }
+                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Grand total",
+                                color = TextSecondary,
+                                fontWeight = FontWeight.W500
+                            )
+                            Text(
+                                text = "${checkout.summary.grandTotal} ₫",
+                                color = TextSecondary,
+                                fontWeight = FontWeight.W500
+                            )
+                        }
+                    }
+                    PrimaryButton(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        text = "Order now",
+                        onClick = navigateToSuccess
+                    )
+                }
+            }
+        )
+    }
+}
+@Composable
+fun ProductCard(
+    modifier : Modifier = Modifier,
+    item : CheckoutData.Item
+){
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .height(100.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            SubcomposeAsyncImage(
+                model = item.imageUrl,
+                loading = {
+                    LoadingCard()
+                },
+                error = {
+                    Image(
+                        painter = painterResource(Resources.Icon.Broken),
+                        contentDescription = "broken image"
+                    )
+                },
+                contentDescription = "book image",
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(0.666f),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Text(
+                    text = item.productName,
+                    fontSize = FontSize.EXTRA_REGULAR,
+                    fontWeight = FontWeight.W500
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "${item.finalPrice}",
+                        fontSize = FontSize.REGULAR,
+                        color = TextSecondary
+                    )
+                    Text(
+                        text = " ₫",
+                        fontSize = FontSize.SMALL
+                    )
+                }
+                Text(
+                    text = "x${item.quantity}",
+                    fontSize = FontSize.SMALL,
+                    color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
+                )
+            }
+        }
+
+    }
+}

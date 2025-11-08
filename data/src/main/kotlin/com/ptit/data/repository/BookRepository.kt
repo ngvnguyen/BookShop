@@ -9,7 +9,15 @@ import com.ptit.data.model.book.update.UpdateBookForm
 interface BookRepository {
     suspend fun createBook(accessToken: String,bookForm: CreateBookForm): RequestState<Unit>
     suspend fun updateBook(accessToken: String,bookId:Int,bookForm: UpdateBookForm): RequestState<Unit>
-    suspend fun searchBookPaged(accessToken:String,page:Int,name:String,category:String,author:String):
-            RequestState<FetchBookPagedResponse.Data>
+    suspend fun searchBookPaged(
+        accessToken:String,
+        page:Int,
+        pageSize:Int=20,
+        name:String,
+        categoryQuery: List<String>,
+        authorQuery: List<String>,
+        upperPrice:Int?=null,
+        lowerPrice:Int?=null
+    ): RequestState<FetchBookPagedResponse.Data>
     suspend fun getBookById(accessToken: String,bookId:Int): RequestState<BookResponseData>
 }

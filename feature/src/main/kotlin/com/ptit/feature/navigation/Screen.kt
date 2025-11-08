@@ -54,4 +54,6 @@ sealed class Screen(){
     object PickAddress: Screen()
     @Serializable
     object PickCoupon: Screen()
+    @Serializable
+    object Checkout: Screen()
 }

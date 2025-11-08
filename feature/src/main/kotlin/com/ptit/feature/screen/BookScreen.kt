@@ -27,7 +27,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,11 +72,12 @@ fun BookScreen(
     var drawerState by remember { mutableStateOf(DrawerState.Closed) }
     val coroutineScope = rememberCoroutineScope()
     val filterPriceItem = viewModel.filterPriceItem
-    val searchQuery = viewModel.searchQuery
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
     val isRefreshing = viewModel.isRefreshing
     val categories by viewModel.allCategory.collectAsState()
+    val bookFilter by viewModel.bookFilter.collectAsState()
+    val bookFilterName = viewModel.bookName
     Box(modifier = modifier.fillMaxSize()){
         Scaffold(
             containerColor = if (drawerState.isOpened()) SurfaceDarker else SurfaceLighter,
@@ -97,10 +97,10 @@ fun BookScreen(
                 TopAppBar(
                     title = {
                         CustomSearchBar(
-                            value = searchQuery,
-                            onValueChange = {viewModel.updateSearchQuery(it)},
+                            value = bookFilterName,
+                            onValueChange = {viewModel.updateBookFilterName(it)},
                             onSearch = {
-
+                                viewModel.submitBookFilterName()
                             },
                             onFocusChange = {state->
                                 isFocused = state.isFocused
@@ -111,7 +111,7 @@ fun BookScreen(
                                     contentDescription = "Search",
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(16.dp))
-                                        .clickable(onClick={})
+                                        .clickable(onClick={viewModel.submitBookFilterName()})
                                 )
                             },
                             placeholder = "Search books"
@@ -177,12 +177,19 @@ fun BookScreen(
                             targetState = listBook
                         ) { books->
                             if (books.isEmpty()){
-                                InfoCard(
-                                    image = Resources.Image.Cat,
-                                    title = "No Books Found",
-                                    subtitle = "Try searching another",
-                                    modifier = Modifier.fillMaxSize()
-                                )
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    item {
+                                        InfoCard(
+                                            image = Resources.Image.Cat,
+                                            title = "No Books Found",
+                                            subtitle = "Try searching another"
+                                        )
+                                    }
+                                }
                             }else{
                                 LazyColumn(
                                     modifier = Modifier.fillMaxSize(),
@@ -193,8 +200,9 @@ fun BookScreen(
                                             CategoryChipRow(
                                                 categories = categories.getSuccessData(),
                                                 onClick = {
-
+                                                    viewModel.onBookFilterCategory(it.name)
                                                 },
+                                                selectedCategories = bookFilter.categories,
                                                 modifier = Modifier.padding(start = 12.dp)
                                             )
                                         }
@@ -231,11 +239,12 @@ fun BookScreen(
             visible = drawerState.isOpened(),
             onCloseClick = {drawerState = drawerState.opposite()},
             onFilterClick = {
+                viewModel.submitFilter()
                 drawerState = drawerState.opposite()
             },
             checkedItem = filterPriceItem,
             onSelectFilterPriceItem = {isChecked,filterPriceItem->
-                if (isChecked) viewModel.selectFilterPriceItem(null)
+                if (!isChecked) viewModel.selectFilterPriceItem(null)
                 else viewModel.selectFilterPriceItem(filterPriceItem)
             }
         )
@@ -247,9 +256,9 @@ fun BookScreen(
 fun CategoryChipRow(
     modifier : Modifier = Modifier,
     categories: List<CategoryForm>,
-    onClick:(List<CategoryForm>)->Unit
+    selectedCategories: List<String>,
+    onClick:(CategoryForm)->Unit
 ){
-    val categoriesSelected = remember { mutableStateListOf<CategoryForm>() }
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = modifier
@@ -261,14 +270,9 @@ fun CategoryChipRow(
             CategoryChip(
                 category = category,
                 onClick = {
-                    if (categoriesSelected.contains(category)){
-                        categoriesSelected.remove(category)
-                    }else{
-                        categoriesSelected.add(category)
-                    }
-                    onClick(categoriesSelected)
+                    onClick(category)
                 },
-                selected = categoriesSelected.contains(category)
+                selected = selectedCategories.contains(category.name)
             )
         }
     }

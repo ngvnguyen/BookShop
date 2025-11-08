@@ -165,7 +165,13 @@ class AdminViewModel(
         flow {
             emit(RequestState.LOADING)
             token?.let {
-                val response = bookRepository.searchBookPaged(it,query.page,query.name,query.categoryQuery,query.authorQuery)
+                val response = bookRepository.searchBookPaged(
+                    accessToken =it,
+                    page = query.page,
+                    name = query.name,
+                    categoryQuery = listOf(query.categoryQuery),
+                    authorQuery = listOf(query.authorQuery)
+                )
                 if (response.isSuccess()){
                     val data = response.getSuccessData()
                     val allBookForm = data.books.map { it.toBookForm(data.page,data.pages) }
