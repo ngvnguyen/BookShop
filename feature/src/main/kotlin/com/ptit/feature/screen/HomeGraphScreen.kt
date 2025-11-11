@@ -116,7 +116,8 @@ fun HomeGraphScreen(
     navigateToChangePassword:()->Unit,
     navigateToPickAddress:()->Unit,
     navigateToPickCoupon:()-> Unit,
-    navigateToCheckout:()->Unit
+    navigateToCheckout:()->Unit,
+    navigateToOrder:()->Unit
 ){
     val context = LocalContext.current
     val homeViewModel = koinViewModel<HomeViewModel>()
@@ -256,7 +257,8 @@ fun HomeGraphScreen(
                             viewModel = homeViewModel,
                             navigateToPickAddress = navigateToPickAddress,
                             navigateToPickCoupon = navigateToPickCoupon,
-                            navigateToCheckout = navigateToCheckout
+                            navigateToCheckout = navigateToCheckout,
+                            navigateToOrder = navigateToOrder
                         )
                     }
                 }

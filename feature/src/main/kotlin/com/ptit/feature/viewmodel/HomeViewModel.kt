@@ -44,8 +44,8 @@ import com.ptit.feature.util.SharedState
 
 data class BookFilter(
     val name:String="",
-    val categories:List<String> =listOf(),
-    val authors: List<String> =listOf(),
+    val category:String="",
+    val author: String="",
     val upperPrice:Int?=null,
     val lowerPrice:Int?=null
 )
@@ -107,9 +107,10 @@ class HomeViewModel(
                 val response = bookRepository.searchBookPaged(
                     accessToken = token,
                     page = 1,
+                    pageSize = 21,
                     name = bookFilter.name,
-                    categoryQuery = bookFilter.categories,
-                    authorQuery = bookFilter.authors,
+                    categoryQuery = bookFilter.category,
+                    authorQuery = bookFilter.author,
                     lowerPrice = bookFilter.lowerPrice,
                     upperPrice = bookFilter.upperPrice
                 )
@@ -225,27 +226,20 @@ class HomeViewModel(
     }
 
     fun onBookFilterCategory(category:String){
-        val current = bookFilter.value.categories.toMutableList()
-        if (current.contains(category)){
-            current.remove(category)
-            bookFilter.value = bookFilter.value.copy(categories = current)
-        }
-        else {
-            current.add(category)
-            bookFilter.value = bookFilter.value.copy(categories = current)
-        }
+        if (bookFilter.value.category==category) bookFilter.value = bookFilter.value.copy(category="")
+        else bookFilter.value = bookFilter.value.copy(category=category)
     }
 
     fun addBookFilterAuthor(author:String){
-        val current = bookFilter.value.authors.toMutableList()
-        if (current.contains(author)){
-            current.remove(author)
-            bookFilter.value = bookFilter.value.copy(authors = current)
-        }
-        else {
-            current.add(author)
-            bookFilter.value = bookFilter.value.copy(authors = current)
-        }
+//        val current = bookFilter.value.author.toMutableList()
+//        if (current.contains(author)){
+//            current.remove(author)
+//            bookFilter.value = bookFilter.value.copy(author = current)
+//        }
+//        else {
+//            current.add(author)
+//            bookFilter.value = bookFilter.value.copy(author = current)
+//        }
     }
     fun updateCartSearchQuery(query: String){
         cartSearchQuery.value = query

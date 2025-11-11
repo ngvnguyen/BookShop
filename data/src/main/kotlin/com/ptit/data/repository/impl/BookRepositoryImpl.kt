@@ -82,16 +82,16 @@ class BookRepositoryImpl(private val bookApi: BookApi): BookRepository {
         page: Int,
         pageSize: Int,
         name: String,
-        categoryQuery: List<String>,
-        authorQuery: List<String>,
+        categoryQuery: String,
+        authorQuery: String,
         upperPrice: Int?,
         lowerPrice: Int?
     ): RequestState<FetchBookPagedResponse.Data> {
         try {
             val bookQuery = createBookQuery(name,lowerPrice,upperPrice)
-            val categoryQuery = createQuery(categoryQuery)
-            val authorQuery = createQuery(authorQuery)
-            val response = bookApi.getBookPaged("Bearer $accessToken",page,pageSize,bookQuery,categoryQuery,authorQuery)
+            val category = "name~$categoryQuery"
+            val author = "name~$authorQuery"
+            val response = bookApi.getBookPaged("Bearer $accessToken",page,pageSize,bookQuery,category,author)
             if (response.isSuccessful){
                 val data = response.body()?.data
                 data?.let { return RequestState.SUCCESS(it) }

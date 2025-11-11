@@ -17,17 +17,13 @@ import kotlinx.serialization.json.Json
 import java.net.SocketTimeoutException
 
 class AuthRepositoryImpl(private val authApi: AuthApi): AuthRepository {
-    override suspend fun login(loginForm: LoginForm): RequestState<Pair<String?, LoginResponse.Data>>  {
+    override suspend fun login(loginForm: LoginForm): RequestState<LoginResponse.Data>  {
         try{
             val response = authApi.login(loginForm)
 
             if (response.isSuccessful){
-
                 val loginBody = response.body()
-                val refreshToken = response.headers()["Set-Cookie"]?.split(";")
-                    ?.firstOrNull{it.startsWith("refresh_token=")}
-                    ?.substringAfter("refresh_token=")
-                loginBody?.data?.let { return RequestState.SUCCESS(Pair(refreshToken,it)) }
+                loginBody?.data?.let { return RequestState.SUCCESS(it) }
             }
             val errorBody = response.errorBody()?.string()
             errorBody?.let {
@@ -45,15 +41,12 @@ class AuthRepositoryImpl(private val authApi: AuthApi): AuthRepository {
 
     }
 
-    override suspend fun loginWithRefreshToken(token: String): RequestState<Pair<String?, LoginResponse.Data>> {
+    override suspend fun loginWithRefreshToken(token: String): RequestState<LoginResponse.Data> {
         try{
-            val response = authApi.loginWithRefreshToken("refresh_token=$token")
+            val response = authApi.loginWithRefreshToken(token)
             if (response.isSuccessful){
                 val loginBody = response.body()
-                val refreshToken = response.headers()["Set-Cookie"]?.split(";")
-                    ?.firstOrNull{it.startsWith("refresh_token=")}
-                    ?.substringAfter("refresh_token=")
-                loginBody?.data?.let { return RequestState.SUCCESS(Pair(refreshToken,it)) }
+                loginBody?.data?.let { return RequestState.SUCCESS(it) }
             }
             val errorBody = response.errorBody()?.string()
             errorBody?.let {

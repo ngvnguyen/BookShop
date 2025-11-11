@@ -1,5 +1,6 @@
 package com.ptit.feature.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,6 +56,7 @@ import com.ptit.data.model.checkout.CheckoutData
 import com.ptit.shared.Alpha
 import com.ptit.shared.QuantityCounterSize
 import com.ptit.shared.SurfaceDarker
+import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.LoadingCard
@@ -67,6 +72,7 @@ fun CheckoutScreen(
 ){
     val viewModel = koinViewModel<CheckoutViewModel>()
     val checkoutData by viewModel.checkoutData.collectAsState()
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -150,7 +156,7 @@ fun CheckoutScreen(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(320.dp),
+                            .height(200.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         itemsIndexed(
@@ -164,6 +170,25 @@ fun CheckoutScreen(
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                    Text(
+                        text = "Note",
+                        color = TextSecondary,
+                        fontSize = FontSize.EXTRA_REGULAR,
+                        fontWeight = FontWeight.W500,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    TextField(
+                        value = viewModel.note,
+                        onValueChange = {viewModel.note = it},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(80.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = SurfaceDarker,
+                            unfocusedContainerColor = SurfaceDarker
+                        )
+                    )
+
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
@@ -280,7 +305,16 @@ fun CheckoutScreen(
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
                         text = "Order now",
-                        onClick = navigateToSuccess
+                        onClick = {
+                            viewModel.order(
+                                onSuccess = {
+                                    navigateToSuccess()
+                                },
+                                onError = {e->
+                                    Toast.makeText(context,e,Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
                     )
                 }
             }

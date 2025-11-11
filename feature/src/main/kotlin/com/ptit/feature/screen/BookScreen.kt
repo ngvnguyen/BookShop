@@ -202,7 +202,7 @@ fun BookScreen(
                                                 onClick = {
                                                     viewModel.onBookFilterCategory(it.name)
                                                 },
-                                                selectedCategories = bookFilter.categories,
+                                                selectedCategory = bookFilter.category,
                                                 modifier = Modifier.padding(start = 12.dp)
                                             )
                                         }
@@ -256,7 +256,7 @@ fun BookScreen(
 fun CategoryChipRow(
     modifier : Modifier = Modifier,
     categories: List<CategoryForm>,
-    selectedCategories: List<String>,
+    selectedCategory: String,
     onClick:(CategoryForm)->Unit
 ){
     LazyRow(
@@ -272,7 +272,7 @@ fun CategoryChipRow(
                 onClick = {
                     onClick(category)
                 },
-                selected = selectedCategories.contains(category.name)
+                selected = category.name == selectedCategory
             )
         }
     }

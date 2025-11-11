@@ -27,6 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -92,6 +94,7 @@ fun CartScreen(
     navigateToBookDetails:(Int)->Unit,
     navigateToPickAddress:()->Unit,
     navigateToPickCoupon:()->Unit,
+    navigateToOrder:()->Unit,
     viewModel: HomeViewModel
 ) {
     val focusManager = LocalFocusManager.current
@@ -140,6 +143,16 @@ fun CartScreen(
                         placeholder = "Search cart items",
                         modifier = Modifier.padding(end=14.dp)
                     )
+                },
+                actions = {
+                    TextButton(
+                        onClick = navigateToOrder,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = "My Orders"
+                        )
+                    }
                 }
             )
 

@@ -28,8 +28,8 @@ interface AuthApi {
         @Header("Authorization") token:String
     ): Response<ResponseEntity<AccountResponse.Data>>
 
-    @GET("api/v1/auth/refresh")
-    suspend fun loginWithRefreshToken(@Header("Cookie") cookie:String)
+    @POST("api/v1/auth/refresh")
+    suspend fun loginWithRefreshToken(@Header("refresh-token") refreshToken:String)
     : Response<ResponseEntity<LoginResponse.Data>>
 
     @POST("api/v1/auth/logout")

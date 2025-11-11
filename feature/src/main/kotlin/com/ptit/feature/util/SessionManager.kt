@@ -66,15 +66,15 @@ class SessionManager(
                 val refreshResponse = authRepository.loginWithRefreshToken(token)
                 if (refreshResponse.isSuccess()){
                     val data = refreshResponse.getSuccessData()
-                    data.first?.let { setRefreshToken(it) }
-                    setAccessToken(data.second.accessToken)
+                    setRefreshToken(data.refreshToken)
+                    setAccessToken(data.accessToken)
                     loginStatus.value = RequestState.SUCCESS("Login successfully")
-                    data.second.user.let {user->
+                    data.user.let {user->
                         setSession(
                             userId = user.id,
                             roleId = user.role.id,
                             email = user.email,
-                            accessToken = data.second.accessToken
+                            accessToken = data.accessToken
                         )
                     }
                 }else {
@@ -96,15 +96,15 @@ class SessionManager(
             val loginResponse = authRepository.login(loginForm)
             if (loginResponse.isSuccess()){
                 val data = loginResponse.getSuccessData()
-                data.first?.let { setRefreshToken(it) }
-                setAccessToken(data.second.accessToken)
+                setRefreshToken(data.refreshToken)
+                setAccessToken(data.accessToken)
                 loginStatus.value = RequestState.SUCCESS("Login successfully")
-                data.second.user.let {user->
+                data.user.let {user->
                     setSession(
                         userId = user.id,
                         roleId = user.role.id,
                         email = user.email,
-                        accessToken = data.second.accessToken
+                        accessToken = data.accessToken
                     )
                 }
             }else {

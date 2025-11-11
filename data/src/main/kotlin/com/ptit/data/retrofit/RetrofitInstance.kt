@@ -11,6 +11,7 @@ import com.ptit.data.api.CategoryApi
 import com.ptit.data.api.CheckoutApi
 import com.ptit.data.api.CouponApi
 import com.ptit.data.api.FileApi
+import com.ptit.data.api.OrderApi
 import com.ptit.data.api.PermissionApi
 import com.ptit.data.api.PublisherApi
 import com.ptit.data.api.RoleApi
@@ -79,5 +80,8 @@ object RetrofitInstance {
     }
     val checkoutApi by lazy{
         retrofit.create(CheckoutApi::class.java)
+    }
+    val orderApi by lazy{
+        retrofit.create(OrderApi::class.java)
     }
 }

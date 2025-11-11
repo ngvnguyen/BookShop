@@ -9,6 +9,7 @@ import com.ptit.data.repository.CategoryRepository
 import com.ptit.data.repository.CheckoutRepository
 import com.ptit.data.repository.CouponRepository
 import com.ptit.data.repository.FileRepository
+import com.ptit.data.repository.OrderRepository
 import com.ptit.data.repository.PermissionRepository
 import com.ptit.data.repository.PublisherRepository
 import com.ptit.data.repository.RoleRepository
@@ -22,6 +23,7 @@ import com.ptit.data.repository.impl.CategoryRepositoryImpl
 import com.ptit.data.repository.impl.CheckoutRepositoryImpl
 import com.ptit.data.repository.impl.CouponRepositoryImpl
 import com.ptit.data.repository.impl.FileRepositoryImpl
+import com.ptit.data.repository.impl.OrderRepositoryImpl
 import com.ptit.data.repository.impl.PermissionRepositoryImpl
 import com.ptit.data.repository.impl.PublisherRepositoryImpl
 import com.ptit.data.repository.impl.RoleRepositoryImpl
@@ -38,6 +40,7 @@ import com.ptit.feature.viewmodel.ChangePasswordViewModel
 import com.ptit.feature.viewmodel.CheckoutViewModel
 import com.ptit.feature.viewmodel.CouponViewModel
 import com.ptit.feature.viewmodel.HomeViewModel
+import com.ptit.feature.viewmodel.OrderViewModel
 import com.ptit.feature.viewmodel.ProfileViewModel
 import com.ptit.feature.viewmodel.ResetPasswordViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +63,7 @@ val module = module{
     single<AddressRepository> { AddressRepositoryImpl(RetrofitInstance.addressApi) }
     single<CouponRepository> { CouponRepositoryImpl(RetrofitInstance.couponApi) }
     single<CheckoutRepository> { CheckoutRepositoryImpl(RetrofitInstance.checkoutApi) }
+    single<OrderRepository>{ OrderRepositoryImpl(RetrofitInstance.orderApi) }
 
     single<CoroutineScope>{ CoroutineScope(SupervisorJob()+ Dispatchers.IO) }
     single<SessionManager>{ SessionManager(get(),get(),get(),get(),get()) }
@@ -76,4 +80,5 @@ val module = module{
     viewModelOf(::AddressViewModel)
     viewModelOf(::CouponViewModel)
     viewModelOf(::CheckoutViewModel)
+    viewModelOf(::OrderViewModel)
 }

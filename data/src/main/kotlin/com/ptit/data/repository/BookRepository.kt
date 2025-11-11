@@ -14,8 +14,8 @@ interface BookRepository {
         page:Int,
         pageSize:Int=20,
         name:String,
-        categoryQuery: List<String>,
-        authorQuery: List<String>,
+        categoryQuery: String,
+        authorQuery: String,
         upperPrice:Int?=null,
         lowerPrice:Int?=null
     ): RequestState<FetchBookPagedResponse.Data>

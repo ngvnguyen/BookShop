@@ -10,7 +10,7 @@ data class UpdateAuthorForm(
     val biography: String,
     @SerialName("country")
     val country: String,
-    @SerialName("dateOfBirth")
+    @SerialName("date_of_birth")
     val dateOfBirth: String,
     @SerialName("gender")
     val gender: String,

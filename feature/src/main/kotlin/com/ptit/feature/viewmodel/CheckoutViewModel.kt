@@ -7,8 +7,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
+import com.ptit.data.model.order.CreateOrderRequest
 import com.ptit.data.repository.AddressRepository
 import com.ptit.data.repository.CheckoutRepository
+import com.ptit.data.repository.OrderRepository
 import com.ptit.feature.util.SessionManager
 import com.ptit.feature.util.SharedState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class CheckoutViewModel(
     private val checkoutRepository: CheckoutRepository,
-    private val addressRepository: AddressRepository,
+    private val orderRepository: OrderRepository,
     private val sharedState: SharedState,
     private val sessionManager: SessionManager
 ): ViewModel() {
@@ -33,6 +35,7 @@ class CheckoutViewModel(
         get() = sessionManager.accessToken
     private var accessToken = ""
     private val checkoutRequest get()= sharedState.checkoutRequest
+    var note by mutableStateOf("")
     init{
         viewModelScope.launch {
             accessToken = accessTokenFlow.filterNotNull().first()
@@ -53,6 +56,24 @@ class CheckoutViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = RequestState.LOADING
         )
+
+    fun order(
+        onSuccess:()->Unit,
+        onError:(String)->Unit
+    ){
+        viewModelScope.launch {
+            checkoutRequest?.let { checkout->
+                val orderRequest = CreateOrderRequest(
+                    cartItems = checkout.cartItems.map { CreateOrderRequest.CartItem(it.id) },
+                    couponCode = checkout.couponCode,
+                    note = note
+                )
+                val response = orderRepository.createOrder(accessToken,orderRequest)
+                if (response.isSuccess()) onSuccess()
+                else onError(response.getSuccessData())
+            }
+        }
+    }
 
 
 }

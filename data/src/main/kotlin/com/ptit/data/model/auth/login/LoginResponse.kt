@@ -9,6 +9,8 @@ class LoginResponse {
     data class Data(
         @SerialName("access_token")
         val accessToken: String,
+        @SerialName("refresh_token")
+        val refreshToken:String,
         @SerialName("user")
         val user: User
     ) {

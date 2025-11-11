@@ -23,15 +23,16 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 
 data class ProfileForm(
     val name:String="",
     val email:String="",
     val phone:String="",
     val avatarUrl:String?=null,
-    val dateOfBirth: Instant= Instant.now(),
+    val dateOfBirth: LocalDate? = null,
     val gender:Gender= Gender.MALE
 )
 
@@ -47,7 +48,7 @@ fun UserResponseData.toProfileForm() = ProfileForm(
     email = email,
     phone = phone?:"",
     avatarUrl = avatarUrl,
-    dateOfBirth = dateOfBirth?.let{Instant.parse(it)}?: Instant.now(),
+    dateOfBirth = dateOfBirth?.let{ LocalDate.parse(it)},
     gender = gender.let {Gender.valueOf(it)}
 )
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -89,23 +90,18 @@ class ProfileViewModel(
         }
     }
 
-    fun getDateOfLong(instant: Instant):Long{
-        return instant
-            .atZone(zoneId)
-            .toLocalDate()
-            .atStartOfDay(zoneId)
-            .toInstant()
-            .toEpochMilli()
+    fun getLongFromDate(localDate: LocalDate?):Long?{
+        return localDate
+            ?.atStartOfDay(ZoneOffset.UTC)
+            ?.toInstant()
+            ?.toEpochMilli()
     }
-    fun getDateString(instant: Instant):String{
-        return instant
-            .atZone(zoneId)
-            .toLocalDate()
-            .toString()
+    fun getDateString(localDate: LocalDate?):String{
+        return localDate?.toString()?:""
     }
 
-    fun getInstantFromLong(time:Long):Instant{
-        return Instant.ofEpochMilli(time)
+    fun getLocalDateFromLong(time:Long): LocalDate{
+        return LocalDate.ofEpochDay(time)
     }
 
     fun updateName(name:String){
@@ -115,7 +111,7 @@ class ProfileViewModel(
         profileForm = profileForm.copy(phone = phone)
     }
     fun updateDateOfBirth(time: Long){
-        profileForm = profileForm.copy(dateOfBirth = getInstantFromLong(time))
+        profileForm = profileForm.copy(dateOfBirth = getLocalDateFromLong(time))
     }
     fun updateGender(gender: Gender){
         profileForm = profileForm.copy(gender = gender)

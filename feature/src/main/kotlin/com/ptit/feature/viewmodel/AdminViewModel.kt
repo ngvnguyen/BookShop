@@ -57,8 +57,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 
 enum class Action{
     IDLE,
@@ -169,8 +170,8 @@ class AdminViewModel(
                     accessToken =it,
                     page = query.page,
                     name = query.name,
-                    categoryQuery = listOf(query.categoryQuery),
-                    authorQuery = listOf(query.authorQuery)
+                    categoryQuery = query.categoryQuery,
+                    authorQuery = query.authorQuery
                 )
                 if (response.isSuccess()){
                     val data = response.getSuccessData()
@@ -421,7 +422,7 @@ class AdminViewModel(
         userForm = userForm.copy(gender = gender)
     }
     fun updateUserDateOfBirth(time: Long){
-        userForm = userForm.copy(dateOfBirth = getInstantFromLong(time))
+        userForm = userForm.copy(dateOfBirth = getLocalDateFromLong(time))
     }
     fun updateUserAvatar(
         uri: Uri,
@@ -475,15 +476,18 @@ class AdminViewModel(
         }
     }
 
-    fun getDateString(instant: Instant):String{
-        return instant
-            .atZone(zoneId)
-            .toLocalDate()
-            .toString()
+    fun getLongFromDate(localDate: LocalDate?):Long?{
+        return localDate
+            ?.atStartOfDay(ZoneOffset.UTC)
+            ?.toInstant()
+            ?.toEpochMilli()
+    }
+    fun getDateString(localDate: LocalDate):String{
+        return localDate.toString()
     }
 
-    fun getInstantFromLong(time:Long):Instant{
-        return Instant.ofEpochMilli(time)
+    fun getLocalDateFromLong(time:Long): LocalDate{
+        return LocalDate.ofEpochDay(time)
     }
     fun resetUploadState(){
         uploadState = RequestState.IDLE

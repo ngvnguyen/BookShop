@@ -26,7 +26,6 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -50,19 +49,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import coil.compose.rememberAsyncImagePainter
 import com.ptit.data.DisplayResult
-import com.ptit.data.RequestState
 import com.ptit.feature.domain.Gender
-import com.ptit.feature.viewmodel.Action
 
 import com.ptit.feature.viewmodel.ProfileViewModel
 import com.ptit.shared.FontSize
 import com.ptit.shared.GrayDarker
 import com.ptit.shared.IconSecondary
 import com.ptit.shared.Resources
-import com.ptit.shared.component.CustomTextField
 import com.ptit.shared.component.CustomTextFieldWithLabel
 import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.LoadingCard
@@ -155,6 +150,7 @@ fun ProfileScreen(
 
                     ){
                         val uploadState = viewModel.uploadState
+                        datePickerState.selectedDateMillis = viewModel.getLongFromDate(profileForm.dateOfBirth)
                         when{
                             uploadState.isSuccess() || uploadState.isIdle()->{
                                 Image(

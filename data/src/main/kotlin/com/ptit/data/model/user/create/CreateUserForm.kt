@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class CreateUserForm(
     @SerialName("avatar")
     val avatar: String?,
-    @SerialName("dateOfBirth")
+    @SerialName("date_of_birth")
     val dateOfBirth: String?,
     @SerialName("email")
     val email: String,

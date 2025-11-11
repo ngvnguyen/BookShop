@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class UpdateUserForm(
     @SerialName("avatar")
     val avatar: String?,
-    @SerialName("dateOfBirth")
+    @SerialName("date_of_birth")
     val dateOfBirth: String?,
     @SerialName("email")
     val email: String,
@@ -16,8 +16,6 @@ data class UpdateUserForm(
     val gender: String,
     @SerialName("name")
     val name: String,
-    @SerialName("password")
-    val password: String?,
     @SerialName("phone")
     val phone: String?,
     @SerialName("role")

@@ -56,4 +56,12 @@ sealed class Screen(){
     object PickCoupon: Screen()
     @Serializable
     object Checkout: Screen()
+    @Serializable
+    object OrderSuccess: Screen()
+    @Serializable
+    object Order: Screen()
+    @Serializable
+    data class OrderDetails(
+        val id:Int
+    ): Screen()
 }

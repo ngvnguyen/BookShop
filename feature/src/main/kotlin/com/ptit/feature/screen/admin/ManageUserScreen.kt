@@ -561,6 +561,7 @@ fun UserFormInterface(
     val allRole by viewModel.allRole.collectAsState()
     var datePickerOpened by remember { mutableStateOf(false) }
     var datePickerState = rememberDatePickerState()
+    datePickerState.selectedDateMillis = viewModel.getLongFromDate(userForm.dateOfBirth)
     val pickImageForResult = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {uri->
         uri?.let {
             viewModel.updateUserAvatar(
@@ -694,13 +695,6 @@ fun UserFormInterface(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email
                 )
-            )
-            CustomTextFieldWithLabel(
-                value = userForm.password,
-                onValueChange = {
-                    viewModel.updateUserPassword(it)
-                },
-                label = "New password"
             )
             CustomTextFieldWithLabel(
                 value = userForm.dateOfBirth?.let {viewModel.getDateString(it)}?:"",
