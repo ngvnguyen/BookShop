@@ -32,14 +32,14 @@ fun BottomPageSelect(
 ){
     val left = if (page>2) 2 else page-1
     val right = if (maxPage-page>2) 2 else maxPage-page
-    val dotLeft = page>2
+    val dotLeft = page>3
     val dotRight = maxPage-page>2
-
+    val boxSize = 24.dp
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                vertical = 6.dp
+                top = 6.dp
             ),
         horizontalArrangement = Arrangement.Center
     ) {
@@ -59,7 +59,7 @@ fun BottomPageSelect(
             Box(
                 modifier = Modifier
                     .background(SurfaceDarker)
-                    .size(24.dp)
+                    .size(boxSize)
                     .clickable(onClick = {onPageSelect(pageNum)}),
                 contentAlignment = Alignment.Center
             ){Text(text = "$pageNum")}
@@ -68,7 +68,7 @@ fun BottomPageSelect(
         Box(
             modifier = Modifier
                 .background(SurfaceSecondary.copy(alpha = Alpha.HALF))
-                .size(24.dp),
+                .size(boxSize),
             contentAlignment = Alignment.Center
         ){Text(text = "$page")}
 
@@ -78,7 +78,7 @@ fun BottomPageSelect(
             Box(
                 modifier = Modifier
                     .background(SurfaceDarker)
-                    .size(24.dp)
+                    .size(boxSize)
                     .clickable(onClick = {onPageSelect(pageNum)}),
                 contentAlignment = Alignment.Center
             ){Text(text = "$pageNum")}

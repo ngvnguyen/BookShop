@@ -1,13 +1,17 @@
 package com.ptit.feature.screen
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -53,6 +57,7 @@ import com.ptit.shared.Resources
 import com.ptit.shared.SurfaceBrand
 import com.ptit.shared.SurfaceDarker
 import com.ptit.shared.SurfaceLighter
+import com.ptit.shared.component.BottomPageSelect
 import com.ptit.shared.component.CustomSearchBar
 import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.InfoCard
@@ -78,6 +83,8 @@ fun BookScreen(
     val categories by viewModel.allCategory.collectAsState()
     val bookFilter by viewModel.bookFilter.collectAsState()
     val bookFilterName = viewModel.bookName
+    val page by viewModel.currentPage.collectAsState()
+    val maxPage by viewModel.maxPage.collectAsState()
     Box(modifier = modifier.fillMaxSize()){
         Scaffold(
             containerColor = if (drawerState.isOpened()) SurfaceDarker else SurfaceLighter,
@@ -159,78 +166,94 @@ fun BookScreen(
                 },
                 state = state
             ){
-                bookPaged.DisplayResult(
-                    modifier = Modifier
-                        .clickable(
-                            onClick = {focusManager.clearFocus()},
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ),
-                    onError = {e->
-                        ErrorCard(message= e,modifier = Modifier.fillMaxSize())
-                    },
-                    onLoading = {
-                        LoadingCard(modifier = Modifier.fillMaxSize())
-                    },
-                    onSuccess = {listBook->
-                        AnimatedContent(
-                            targetState = listBook
-                        ) { books->
-                            if (books.isEmpty()){
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    item {
-                                        InfoCard(
-                                            image = Resources.Image.Cat,
-                                            title = "No Books Found",
-                                            subtitle = "Try searching another"
-                                        )
-                                    }
-                                }
-                            }else{
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    stickyHeader {
-                                        if (categories.isSuccess()){
-                                            CategoryChipRow(
-                                                categories = categories.getSuccessData(),
-                                                onClick = {
-                                                    viewModel.onBookFilterCategory(it.name)
-                                                },
-                                                selectedCategory = bookFilter.category,
-                                                modifier = Modifier.padding(start = 12.dp)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    if (categories.isSuccess()) {
+                        CategoryChipRow(
+                            categories = categories.getSuccessData(),
+                            onClick = {
+                                viewModel.onBookFilterCategory(it.name)
+                            },
+                            selectedCategory = bookFilter.category,
+                            modifier = Modifier
+                                .background(SurfaceLighter)
+                                .padding(start = 12.dp)
+                        )
+                    }
+                    bookPaged.DisplayResult(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(
+                                onClick = {focusManager.clearFocus()},
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ),
+                        onError = {e->
+                            ErrorCard(message= e,modifier = Modifier.fillMaxSize())
+                        },
+                        onLoading = {
+                            LoadingCard(modifier = Modifier.fillMaxSize())
+                        },
+                        onSuccess = {listBook->
+                            AnimatedContent(
+                                targetState = listBook
+                            ) { books->
+                                if (books.isEmpty()){
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        item {
+                                            InfoCard(
+                                                image = Resources.Image.Cat,
+                                                title = "No Books Found",
+                                                subtitle = "Try searching another"
                                             )
                                         }
                                     }
-                                    items(
-                                        items = books.chunked(3)
-                                    ) {bookChunked->
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(horizontal = 8.dp)
-                                                .fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                        ) {
-                                            bookChunked.forEach {
-                                                BookCard(
-                                                    item = it,
-                                                    onClick = {
-                                                        navigateToBookDetails(it.id)
-                                                    }
-                                                )
+                                }else{
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        items(
+                                            items = books.chunked(3)
+                                        ) {bookChunked->
+                                            Row(
+                                                modifier = Modifier
+                                                    .padding(horizontal = 8.dp)
+                                                    .fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                            ) {
+                                                bookChunked.forEach {
+                                                    BookCard(
+                                                        item = it,
+                                                        onClick = {
+                                                            navigateToBookDetails(it.id)
+                                                        }
+                                                    )
+                                                }
                                             }
                                         }
                                     }
                                 }
+
+
                             }
                         }
+                    )
+                    if (maxPage.isSuccess()){
+                        val pages = maxPage.getSuccessData()
+                        BottomPageSelect(
+                            page = page,
+                            maxPage = pages,
+                            onForwardSelect = {viewModel.updateBookFilterPage(pages)},
+                            onRewindSelect = {viewModel.updateBookFilterPage(1)},
+                            onPageSelect = {viewModel.updateBookFilterPage(it)}
+                        )
                     }
-                )
+                }
+
             }
 
 

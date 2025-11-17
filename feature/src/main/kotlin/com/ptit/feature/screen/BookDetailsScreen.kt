@@ -63,7 +63,8 @@ fun BookDetailsScreen(
                 title = {
                     Text(
                         text = if (!bookState.isSuccess()) "Book Details" else bookState.getSuccessData().name,
-                        fontSize = FontSize.MEDIUM
+                        fontSize = FontSize.MEDIUM,
+                        maxLines = 1
                     )
                 },
                 navigationIcon = {
@@ -117,7 +118,6 @@ fun BookDetailsScreen(
                                     contentDescription = "book image",
                                     modifier = Modifier
                                         .fillMaxHeight()
-                                        .aspectRatio(0.666f)
                                 )
                             }
                         }
@@ -127,21 +127,16 @@ fun BookDetailsScreen(
                                     .padding(horizontal = 16.dp)
                                     .padding(top = 12.dp)
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = book.name.uppercase(),
-                                        fontSize = FontSize.EXTRA_REGULAR,
-                                        fontWeight = FontWeight.W500
-                                    )
-                                    Text(
-                                        text = "${book.price.toInt()} vnd(-${book.discount}%)",
-                                        fontSize = FontSize.EXTRA_REGULAR,
-                                        color = TextSecondary
-                                    )
-                                }
+                                Text(
+                                    text = book.name.uppercase(),
+                                    fontSize = FontSize.EXTRA_REGULAR,
+                                    fontWeight = FontWeight.W500
+                                )
+                                Text(
+                                    text = "${book.price.toInt()} vnd(-${book.discount}%)",
+                                    fontSize = FontSize.EXTRA_REGULAR,
+                                    color = TextSecondary
+                                )
                                 book.category?.let {
                                     Text(
                                         text = it.name,

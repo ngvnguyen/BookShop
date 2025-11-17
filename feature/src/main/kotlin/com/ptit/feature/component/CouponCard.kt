@@ -59,12 +59,24 @@ fun CouponCard(
                 modifier = Modifier
                     //size must be divisible by 8.dp
                     .size(104.dp)
-                    .background(TextSecondary.copy(alpha = Alpha.HALF)),
+                    .background(
+                        when (coupon.discountType){
+                            CouponData.CouponType.PERCENTAGE ,CouponData.CouponType.FIXED_AMOUNT -> TextSecondary.copy(alpha = Alpha.HALF)
+                            CouponData.CouponType.FREE_SHIPPING -> Color.Green.copy(alpha = Alpha.HALF)
+                        }
+                    ),
                 contentAlignment = Alignment.Center
             ){
                 Text(
-                    text = "${coupon.discountValue}%",
-                    fontSize = FontSize.LARGE,
+                    text = when(coupon.discountType){
+                        CouponData.CouponType.PERCENTAGE -> "${coupon.discountValue}%"
+                        CouponData.CouponType.FIXED_AMOUNT -> "${coupon.discountValue} đ"
+                        CouponData.CouponType.FREE_SHIPPING -> "${coupon.discountValue} đ"
+                    },
+                    fontSize = when(coupon.discountType){
+                        CouponData.CouponType.FIXED_AMOUNT,CouponData.CouponType.FREE_SHIPPING -> FontSize.MEDIUM
+                        CouponData.CouponType.PERCENTAGE -> FontSize.LARGE
+                    },
                     fontWeight = FontWeight.W400
                 )
             }

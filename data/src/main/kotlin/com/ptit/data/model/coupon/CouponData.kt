@@ -13,7 +13,7 @@ data class CouponData(
     @SerialName("description")
     val description: String,
     @SerialName("discount_type")
-    val discountType: String,
+    val discountType: CouponType,
     @SerialName("discount_value")
     val discountValue: Int,
     @SerialName("expires_at")
@@ -36,4 +36,11 @@ data class CouponData(
     val usageLimit: Int,
     @SerialName("usage_limit_per_customer")
     val usageLimitPerCustomer: Int
-)
+){
+    @Serializable
+    enum class CouponType(val title:String){
+        PERCENTAGE("Percentage"),
+        FIXED_AMOUNT("Fixed Amount"),
+        FREE_SHIPPING("Free Shipping")
+    }
+}

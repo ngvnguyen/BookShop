@@ -97,8 +97,10 @@ class HomeViewModel(
         )
     var bookName by mutableStateOf("")
     val bookFilter = MutableStateFlow(BookFilter())
+    val currentPage = MutableStateFlow(1)
+    val maxPage: MutableStateFlow<RequestState<Int>> = MutableStateFlow(RequestState.LOADING)
     val bookPaged: StateFlow<RequestState<List<BookForm>>>
-        = combine(accessTokenFlow,bookFilter,bookRefreshTrigger) { token, bookFilter, _->
+        = combine(accessTokenFlow,bookFilter,currentPage,bookRefreshTrigger) { token, bookFilter,_, _->
         token to bookFilter
     }.flatMapLatest { (token,bookFilter)->
         flow {
@@ -106,7 +108,7 @@ class HomeViewModel(
             token?.let {
                 val response = bookRepository.searchBookPaged(
                     accessToken = token,
-                    page = 1,
+                    page = currentPage.value,
                     pageSize = 21,
                     name = bookFilter.name,
                     categoryQuery = bookFilter.category,
@@ -116,11 +118,14 @@ class HomeViewModel(
                 )
                 if (response.isSuccess()){
                     val data = response.getSuccessData()
+                    if (currentPage.value != data.page) currentPage.value = data.page
+                    maxPage.value = RequestState.SUCCESS(data.pages)
                     emit(
                         RequestState.SUCCESS(
                             data.books.map { it.toBookForm(page =data.page, maxPage = data.pages) }
                         )
                     )
+
                 }
                 else {
                     emit(RequestState.ERROR(response.getErrorMessage()))
@@ -256,7 +261,9 @@ class HomeViewModel(
     fun submitBookFilterName(){
         bookFilter.value = bookFilter.value.copy(name = bookName)
     }
-
+    fun updateBookFilterPage(page:Int){
+        currentPage.value = page
+    }
     fun onBookFilterCategory(category:String){
         if (bookFilter.value.category==category) bookFilter.value = bookFilter.value.copy(category="")
         else bookFilter.value = bookFilter.value.copy(category=category)
