@@ -104,9 +104,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ManageUserScreen(
     navigateBack:()->Unit,
-    navigateToCreateUser:()->Unit
+    navigateToCreateUser:()->Unit,
+    adminViewModel: AdminViewModel
 ){
-    val adminViewModel = koinViewModel<AdminViewModel>()
     var action = adminViewModel.action
     val snackbarHostState = remember { SnackbarHostState() }
     val users by adminViewModel.userPaged.collectAsState()

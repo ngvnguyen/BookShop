@@ -19,5 +19,7 @@ interface BookRepository {
         upperPrice:Int?=null,
         lowerPrice:Int?=null
     ): RequestState<FetchBookPagedResponse.Data>
+    suspend fun getNewestBook(accessToken: String): RequestState<FetchBookPagedResponse.Data>
+    suspend fun getDiscountedBook(accessToken: String): RequestState<FetchBookPagedResponse.Data>
     suspend fun getBookById(accessToken: String,bookId:Int): RequestState<BookResponseData>
 }

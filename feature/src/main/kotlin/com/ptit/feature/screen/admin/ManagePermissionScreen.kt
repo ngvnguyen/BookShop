@@ -69,9 +69,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManagePermissionScreen(
-    navigateBack:()->Unit
+    navigateBack:()->Unit,
+    adminViewModel: AdminViewModel
 ) {
-    val adminViewModel = koinViewModel<AdminViewModel>()
     val permissionState by adminViewModel.allPermission.collectAsState()
     var action = adminViewModel.action
     val snackbarHostState = remember { SnackbarHostState() }

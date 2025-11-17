@@ -21,14 +21,14 @@ interface CategoryApi {
     suspend fun create(
         @Header("Authorization") token: String,
         @Body body: CreateCategoryForm
-    ): Response<CreateCategoryResponse>
+    ): Response<ResponseEntity<CreateCategoryResponse.Data>>
 
     @PUT("api/v1/categories/{id}")
     suspend fun update(
         @Header("Authorization") token: String,
         @Body body: UpdateCategoryForm,
         @Path("id") id:Int
-    ): Response<UpdateCategoryResponse>
+    ): Response<ResponseEntity<UpdateCategoryResponse.Data>>
 
     @DELETE("api/v1/categories/{id}")
     suspend fun delete(

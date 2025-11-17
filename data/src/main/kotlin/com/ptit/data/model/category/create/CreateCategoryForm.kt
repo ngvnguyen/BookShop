@@ -9,5 +9,6 @@ data class CreateCategoryForm(
     @SerialName("description")
     val description: String,
     @SerialName("name")
-    val name: String
+    val name: String,
+    val status : String
 )

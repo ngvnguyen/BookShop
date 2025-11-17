@@ -92,9 +92,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageBookScreen(
-    navigateBack:()->Unit
+    navigateBack:()->Unit,
+    adminViewModel: AdminViewModel
 ){
-    val adminViewModel = koinViewModel<AdminViewModel>()
     var action = adminViewModel.action
     val snackbarHostState = remember { SnackbarHostState() }
     val books by adminViewModel.bookPaged.collectAsState()

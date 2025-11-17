@@ -71,12 +71,12 @@ class HomeViewModel(
     val couponCode:String?
         get() = sharedState.couponCode
 
-    private val homeRefreshTrigger = MutableStateFlow(0)
+    private val bookRefreshTrigger = MutableStateFlow(0)
     var isRefreshing by mutableStateOf(false)
     val addressId = snapshotFlow { sharedState.addressId }
 
     val allCategory: StateFlow<RequestState<List<CategoryForm>>> =
-        combine(accessTokenFlow,homeRefreshTrigger) { token, _->
+        combine(accessTokenFlow,bookRefreshTrigger) { token, _->
             token
         }.flatMapLatest { token->
             flow {
@@ -98,7 +98,7 @@ class HomeViewModel(
     var bookName by mutableStateOf("")
     val bookFilter = MutableStateFlow(BookFilter())
     val bookPaged: StateFlow<RequestState<List<BookForm>>>
-        = combine(accessTokenFlow,bookFilter,homeRefreshTrigger) { token,bookFilter, _->
+        = combine(accessTokenFlow,bookFilter,bookRefreshTrigger) { token, bookFilter, _->
         token to bookFilter
     }.flatMapLatest { (token,bookFilter)->
         flow {
@@ -132,6 +132,38 @@ class HomeViewModel(
         started = SharingStarted.Eagerly,
         initialValue = RequestState.LOADING
     )
+
+    val homeRefreshTrigger = MutableStateFlow(0)
+    val newestBook = combine(accessTokenFlow,homeRefreshTrigger) {token,_->token  }
+        .flatMapLatest { token->
+            flow {
+                emit(RequestState.LOADING)
+                if (token!=null){
+                    val response = bookRepository.getNewestBook(token)
+                    if (response.isSuccess()) emit(RequestState.SUCCESS(response.getSuccessData().books.map { it.toBookForm(0,0) }))
+                    else emit(RequestState.ERROR(response.getErrorMessage()))
+                }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = RequestState.LOADING
+        )
+    val discountedBook = combine(accessTokenFlow,homeRefreshTrigger) {token,_->token  }
+        .flatMapLatest { token->
+            flow {
+                emit(RequestState.LOADING)
+                if (token!=null){
+                    val response = bookRepository.getDiscountedBook(token)
+                    if (response.isSuccess()) emit(RequestState.SUCCESS(response.getSuccessData().books.map { it.toBookForm(0,0) }))
+                    else emit(RequestState.ERROR(response.getErrorMessage()))
+                }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = RequestState.LOADING
+        )
 
     var cartSearchQuery = MutableStateFlow("") ;private set
     val cartRefreshTrigger = MutableStateFlow(0)
@@ -255,7 +287,7 @@ class HomeViewModel(
     fun bookRefresh(){
         viewModelScope.launch {
             isRefreshing = true
-            homeRefreshTrigger.value++
+            bookRefreshTrigger.value++
             delay(100)
             isRefreshing = false
         }

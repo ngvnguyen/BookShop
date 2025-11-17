@@ -110,6 +110,48 @@ class BookRepositoryImpl(private val bookApi: BookApi): BookRepository {
         }
     }
 
+    override suspend fun getNewestBook(accessToken: String): RequestState<FetchBookPagedResponse.Data> {
+        try {
+            val response = bookApi.getNewestBook("Bearer $accessToken")
+            if (response.isSuccessful){
+                val data = response.body()?.data
+                data?.let { return RequestState.SUCCESS(it) }
+            }
+            val errBody = response.errorBody()?.string()
+            errBody?.let { body->
+                val errMsg = Json.decodeFromString<ResponseEntity<FetchBookPagedResponse.Data>>(body).message
+                return RequestState.ERROR(errMsg)
+            }
+            return RequestState.ERROR("Unknown error")
+        }catch (e: SocketTimeoutException){
+            return RequestState.ERROR("Server not responding")
+        } catch (e: Exception){
+            e.printStackTrace()
+            return RequestState.ERROR("Network error")
+        }
+    }
+
+    override suspend fun getDiscountedBook(accessToken: String): RequestState<FetchBookPagedResponse.Data> {
+        try {
+            val response = bookApi.getDiscountedBook("Bearer $accessToken")
+            if (response.isSuccessful){
+                val data = response.body()?.data
+                data?.let { return RequestState.SUCCESS(it) }
+            }
+            val errBody = response.errorBody()?.string()
+            errBody?.let { body->
+                val errMsg = Json.decodeFromString<ResponseEntity<FetchBookPagedResponse.Data>>(body).message
+                return RequestState.ERROR(errMsg)
+            }
+            return RequestState.ERROR("Unknown error")
+        }catch (e: SocketTimeoutException){
+            return RequestState.ERROR("Server not responding")
+        } catch (e: Exception){
+            e.printStackTrace()
+            return RequestState.ERROR("Network error")
+        }
+    }
+
     override suspend fun getBookById(
         accessToken: String,
         bookId: Int

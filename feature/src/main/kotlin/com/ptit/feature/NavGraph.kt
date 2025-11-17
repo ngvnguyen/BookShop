@@ -20,13 +20,15 @@ import com.ptit.feature.screen.PickAddressScreen
 import com.ptit.feature.screen.PickCouponScreen
 import com.ptit.feature.screen.ProfileScreen
 import com.ptit.feature.screen.admin.adminNavGraph
+import com.ptit.feature.viewmodel.AdminViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NavGraph(
     modifier: Modifier = Modifier
 ){
     val navController = rememberNavController()
-
+    val adminViewModel = koinViewModel<AdminViewModel>()
     NavHost(
         navController = navController,
         startDestination = Screen.Auth,
@@ -179,6 +181,9 @@ fun NavGraph(
         composable<Screen.OrderDetails> {
 
         }
-        adminNavGraph(navController)
+        adminNavGraph(
+            navController = navController,
+            adminViewModel = adminViewModel
+        )
     }
 }

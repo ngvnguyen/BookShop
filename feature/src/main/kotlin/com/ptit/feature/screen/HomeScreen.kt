@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -73,7 +75,8 @@ fun HomeScreen(
     navigateToBook:()->Unit,
     viewModel: HomeViewModel
 ){
-    val bookPaged by viewModel.bookPaged.collectAsState()
+    val newestBook by viewModel.newestBook.collectAsState()
+    val discountedBook by viewModel.discountedBook.collectAsState()
     val context = LocalContext.current
 
     var drawerState by remember { mutableStateOf(DrawerState.Closed) }
@@ -170,7 +173,7 @@ fun HomeScreen(
                 },
                 state = state
             ) {
-                bookPaged.DisplayResult(
+                newestBook.DisplayResult(
                     modifier = Modifier
                         .clickable(
                             onClick = {focusManager.clearFocus()},
@@ -200,7 +203,8 @@ fun HomeScreen(
                         ){
                             LazyColumn(
                                 modifier = Modifier
-                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 item {
                                     Column(
@@ -225,6 +229,44 @@ fun HomeScreen(
                                                 navigateToBookDetails(book.id)
                                             }
                                         )
+
+                                    }
+                                }
+
+                                item {
+                                    if (discountedBook.isSuccess()){
+                                        val data = discountedBook.getSuccessData()
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                                        ) {
+                                            Row {
+                                                VerticalDivider(
+                                                    modifier = Modifier.height(24.dp),
+                                                    thickness = 4.dp,
+                                                    color = Color.Blue
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = "Discounted",
+                                                    fontWeight = FontWeight.W500,
+                                                    fontSize = FontSize.EXTRA_REGULAR
+                                                )
+                                            }
+
+                                            LazyRow(
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                items(
+                                                    items = data,
+                                                    key = {it.id}
+                                                ) {item->
+                                                    BookCard(
+                                                        item = item,
+                                                        onClick = {navigateToBookDetails(item.id)}
+                                                    )
+                                                }
+                                            }
+                                        }
 
                                     }
                                 }

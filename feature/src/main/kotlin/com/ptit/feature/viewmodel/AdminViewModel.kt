@@ -12,6 +12,7 @@ import com.ptit.data.RequestState
 import com.ptit.data.repository.AuthorRepository
 import com.ptit.data.repository.BookRepository
 import com.ptit.data.repository.CategoryRepository
+import com.ptit.data.repository.DashboardRepository
 import com.ptit.data.repository.PermissionRepository
 import com.ptit.data.repository.PublisherRepository
 import com.ptit.data.repository.RoleRepository
@@ -32,6 +33,7 @@ import com.ptit.feature.form.toAuthorForm
 import com.ptit.feature.form.toBookForm
 import com.ptit.feature.form.toCategoryForm
 import com.ptit.feature.form.toCreateBookForm
+import com.ptit.feature.form.toCreateCategoryForm
 import com.ptit.feature.form.toCreatePermissionForm
 import com.ptit.feature.form.toCreateRoleForm
 import com.ptit.feature.form.toCreateUserForm
@@ -55,6 +57,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -88,6 +91,7 @@ class AdminViewModel(
     private val publisherRepository: PublisherRepository,
     private val roleRepository: RoleRepository,
     private val userRepository: UserRepository,
+    private val dashboardRepository: DashboardRepository,
     private val uploadImageHelper: UploadImageHelper,
     private val sessionManager: SessionManager
 ) : ViewModel() {
@@ -99,6 +103,48 @@ class AdminViewModel(
 
     val rolePermission
         get() = sessionManager.permissions
+
+    val overviewData = accessTokenFlow.flatMapLatest { token->
+        flow{
+            emit(RequestState.LOADING)
+            if (token!=null){
+                val response = dashboardRepository.getOverviewData(token)
+                emit(response)
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = RequestState.LOADING
+    )
+
+    val revenueByMonthData = accessTokenFlow.flatMapLatest { token->
+        flow{
+            emit(RequestState.LOADING)
+            if (token!=null){
+                val response = dashboardRepository.getRevenueByMonth(token)
+                emit(response)
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = RequestState.LOADING
+    )
+
+    val orderStatusCountData = accessTokenFlow.flatMapLatest { token->
+        flow{
+            emit(RequestState.LOADING)
+            if (token!=null){
+                val response = dashboardRepository.getOrderStatusCount(token)
+                emit(response)
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = RequestState.LOADING
+    )
 
     val permissionRefreshTrigger = MutableStateFlow(0)
     val allPermission = combine(accessTokenFlow,permissionRefreshTrigger){ token, _->token}.flatMapLatest { token->
@@ -296,6 +342,8 @@ class AdminViewModel(
                 bookForm.category != null &&
                 bookForm.price > 0.0 &&
                 bookForm.language.isNotBlank()
+
+    var categoryForm by mutableStateOf(CategoryForm());private set
 
     var action by mutableStateOf(Action.IDLE)
     var uploadState: RequestState<Unit> by mutableStateOf(RequestState.IDLE)
@@ -700,4 +748,37 @@ class AdminViewModel(
         roleRefreshTrigger.value++
     }
 
+    fun selectCategoryForm(categoryForm: CategoryForm){
+        this.categoryForm = categoryForm
+    }
+    fun resetCategoryForm(){
+        categoryForm = CategoryForm()
+    }
+    fun updateCategoryForm(
+        name: String? = null,
+        description: String? = null,
+        status: CategoryForm.Status? = null
+    ){
+        categoryForm = categoryForm.copy(
+            name = name ?: categoryForm.name,
+            description = description ?: categoryForm.description,
+            status = status ?: categoryForm.status
+        )
+    }
+
+    fun createCategory(
+        onSuccess: suspend () -> Unit,
+        onError: suspend (String) ->Unit
+    ){
+        viewModelScope.launch {
+            val response = categoryRepository.createCategory(
+                accessToken = accessToken,
+                createCategoryForm = categoryForm.toCreateCategoryForm()
+            )
+            if (response.isSuccess()){
+                onSuccess()
+                refreshCategoryTrigger.value++
+            }else onError(response.getErrorMessage())
+        }
+    }
 }

@@ -53,10 +53,14 @@ interface BookApi {
         @Query("author") authorName:String?=null
     ): Response<ResponseEntity<FetchBookPagedResponse.Data>>
 
-//    @GET("api/v1/books")
-//    suspend fun searchBookPaged(
-//        @Header("Authorization") token: String,
-//        @Query("page") page:Int=0,
-//        @Query("size") size:Int=20
-//    ): Response<FetchBookPagedResponse>
+    @GET("api/v1/books/newest")
+    suspend fun getNewestBook(
+        @Header("Authorization") token: String,
+    ): Response<ResponseEntity<FetchBookPagedResponse.Data>>
+
+    @GET("api/v1/books/discount")
+    suspend fun getDiscountedBook(
+        @Header("Authorization") token: String,
+    ): Response<ResponseEntity<FetchBookPagedResponse.Data>>
+
 }

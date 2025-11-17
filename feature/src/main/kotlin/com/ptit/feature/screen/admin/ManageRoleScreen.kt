@@ -70,9 +70,9 @@ import kotlinx.coroutines.flow.compose
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageRoleScreen(
-    navigateBack:()->Unit
+    navigateBack:()->Unit,
+    adminViewModel: AdminViewModel
 ){
-    val adminViewModel = koinViewModel<AdminViewModel>()
     val roles by adminViewModel.allRole.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     var showDialog by remember { mutableStateOf(false) }

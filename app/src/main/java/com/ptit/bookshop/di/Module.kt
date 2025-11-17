@@ -8,6 +8,7 @@ import com.ptit.data.repository.CartRepository
 import com.ptit.data.repository.CategoryRepository
 import com.ptit.data.repository.CheckoutRepository
 import com.ptit.data.repository.CouponRepository
+import com.ptit.data.repository.DashboardRepository
 import com.ptit.data.repository.FileRepository
 import com.ptit.data.repository.OrderRepository
 import com.ptit.data.repository.PermissionRepository
@@ -22,6 +23,7 @@ import com.ptit.data.repository.impl.CartRepositoryImpl
 import com.ptit.data.repository.impl.CategoryRepositoryImpl
 import com.ptit.data.repository.impl.CheckoutRepositoryImpl
 import com.ptit.data.repository.impl.CouponRepositoryImpl
+import com.ptit.data.repository.impl.DashboardRepositoryImpl
 import com.ptit.data.repository.impl.FileRepositoryImpl
 import com.ptit.data.repository.impl.OrderRepositoryImpl
 import com.ptit.data.repository.impl.PermissionRepositoryImpl
@@ -64,6 +66,7 @@ val module = module{
     single<CouponRepository> { CouponRepositoryImpl(RetrofitInstance.couponApi) }
     single<CheckoutRepository> { CheckoutRepositoryImpl(RetrofitInstance.checkoutApi) }
     single<OrderRepository>{ OrderRepositoryImpl(RetrofitInstance.orderApi) }
+    single<DashboardRepository>{ DashboardRepositoryImpl(RetrofitInstance.dashboardApi) }
 
     single<CoroutineScope>{ CoroutineScope(SupervisorJob()+ Dispatchers.IO) }
     single<SessionManager>{ SessionManager(get(),get(),get(),get(),get()) }

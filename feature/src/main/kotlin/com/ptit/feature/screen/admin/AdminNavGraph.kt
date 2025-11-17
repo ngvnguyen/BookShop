@@ -1,15 +1,15 @@
 package com.ptit.feature.screen.admin
 
-import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.ptit.feature.navigation.Screen
+import com.ptit.feature.viewmodel.AdminViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.adminNavGraph(
-    navController: NavController
+    navController: NavController,
+    adminViewModel: AdminViewModel
 ){
     composable<Screen.Admin> {
         AdminScreen(
@@ -49,7 +49,8 @@ fun NavGraphBuilder.adminNavGraph(
             },
             navigateToCreateUser = {
                 navController.navigate(Screen.ManageUser.CreateUser)
-            }
+            },
+            adminViewModel = adminViewModel
         )
     }
     composable<Screen.ManageUser.CreateUser> {
@@ -64,29 +65,41 @@ fun NavGraphBuilder.adminNavGraph(
         ManageRoleScreen(
             navigateBack = {
                 navController.navigateUp()
-            }
+            },
+            adminViewModel = adminViewModel
         )
     }
     composable<Screen.ManageAuthor> {
-
+        ManageAuthorScreen(
+            navigateBack = {navController.navigateUp()},
+            adminViewModel = adminViewModel
+        )
     }
     composable<Screen.ManageBook> {
         ManageBookScreen(
-            navigateBack = {navController.navigateUp()}
+            navigateBack = {navController.navigateUp()},
+            adminViewModel = adminViewModel
         )
     }
     composable<Screen.ManageCategory> {
-
+        ManageCategoryScreen(
+            navigateBack = {navController.navigateUp()},
+            adminViewModel = adminViewModel
+        )
     }
     composable<Screen.ManagePermission> {
         ManagePermissionScreen(
-            navigateBack = {navController.navigateUp()}
+            navigateBack = {navController.navigateUp()},
+            adminViewModel = adminViewModel
         )
     }
     composable<Screen.ManageCart> {
 
     }
     composable<Screen.ManagePublisher> {
-        
+        ManagePublisherScreen(
+            navigateBack = {navController.navigateUp()},
+            adminViewModel = adminViewModel
+        )
     }
 }
