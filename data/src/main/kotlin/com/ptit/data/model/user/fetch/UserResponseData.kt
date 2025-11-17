@@ -16,7 +16,7 @@ data class UserResponseData(
     @SerialName("email")
     val email: String,
     @SerialName("gender")
-    val gender: String,
+    val gender: String?,
     @SerialName("id")
     val id: Int,
     @SerialName("name")

@@ -49,7 +49,7 @@ fun UserResponseData.toProfileForm() = ProfileForm(
     phone = phone?:"",
     avatarUrl = avatarUrl,
     dateOfBirth = dateOfBirth?.let{ LocalDate.parse(it)},
-    gender = gender.let {Gender.valueOf(it)}
+    gender = gender?.let {Gender.valueOf(it)}?: Gender.MALE
 )
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModel(

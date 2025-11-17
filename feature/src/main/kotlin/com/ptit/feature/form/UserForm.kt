@@ -57,7 +57,7 @@ fun UserResponseData.toUserForm(page:Int,maxPage: Int) = UserForm(
     roleId = role?.id?:0,
     roleName = role?.name?:"no role",
     isActive = status == "ACTIVE",
-    gender = Gender.valueOf(gender),
+    gender = gender?.let{Gender.valueOf(it)}?: Gender.MALE,
     dateOfBirth = dateOfBirth?.let {LocalDate.parse(it,formatter) },
     avatarUrl = avatarUrl,
     page = page,

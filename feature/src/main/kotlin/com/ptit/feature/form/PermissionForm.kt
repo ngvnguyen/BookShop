@@ -10,7 +10,7 @@ data class PermissionForm(
     val isActive:Boolean=true,
     val apiPath:String="",
     val method: Permission.Method = Permission.Method.GET,
-    val module: Permission.Module = Permission.Module.User,
+    val module: Permission.Module = Permission.Module.USERS,
     val id :Int?=null,
     val createdAt:String?=null,
     val createdBy:String?=null

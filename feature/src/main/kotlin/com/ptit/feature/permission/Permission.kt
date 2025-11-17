@@ -39,24 +39,24 @@ data class Permission(
         val title:String,
         @DrawableRes val icon:Int?=null
     ){
-        User("Manage User", Resources.Icon.Person),
-        Role("Manage Role",Resources.Icon.Group),
-        Category("Manage Category",Resources.Icon.Category),
-        Author("Manage Author",Resources.Icon.Author),
-        Publisher("Manage Publisher",Resources.Icon.Domain),
-        Book("Manage Book",Resources.Icon.Book),
-        Cart("Manage Cart",Resources.Icon.ShoppingCart),
-        Permission("Manage Permission",Resources.Icon.Key)
+        USERS("Manage User", Resources.Icon.Person),
+        ROLES("Manage Role",Resources.Icon.Group),
+        CATEGORIES("Manage Category",Resources.Icon.Category),
+        AUTHORS("Manage Author",Resources.Icon.Author),
+        PUBLISHERS("Manage Publisher",Resources.Icon.Domain),
+        BOOKS("Manage Book",Resources.Icon.Book),
+        CARTS("Manage Cart",Resources.Icon.ShoppingCart),
+        PERMISSIONS("Manage Permission",Resources.Icon.Key)
     }
 
-    fun isUser() = this.module == Module.User
-    fun isRole() = this.module == Module.Role
-    fun isCategory() = this.module == Module.Category
-    fun isAuthor() = this.module == Module.Author
-    fun isPublisher() = this.module == Module.Publisher
-    fun isBook() = this.module == Module.Book
-    fun isCart() = this.module == Module.Cart
-    fun isPermission() = this.module == Module.Permission
+    fun isUser() = this.module == Module.USERS
+    fun isRole() = this.module == Module.ROLES
+    fun isCategory() = this.module == Module.CATEGORIES
+    fun isAuthor() = this.module == Module.AUTHORS
+    fun isPublisher() = this.module == Module.PUBLISHERS
+    fun isBook() = this.module == Module.BOOKS
+    fun isCart() = this.module == Module.CARTS
+    fun isPermission() = this.module == Module.PERMISSIONS
 }
 
 fun PermissionResponseData.toPermissionData() =
