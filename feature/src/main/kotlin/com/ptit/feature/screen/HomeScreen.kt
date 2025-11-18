@@ -78,10 +78,6 @@ fun HomeScreen(
     val newestBook by viewModel.newestBook.collectAsState()
     val discountedBook by viewModel.discountedBook.collectAsState()
     val context = LocalContext.current
-
-    var drawerState by remember { mutableStateOf(DrawerState.Closed) }
-    val coroutineScope = rememberCoroutineScope()
-    val filterPriceItem = viewModel.filterPriceItem
     val bookFilterName = viewModel.bookName
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
@@ -90,19 +86,9 @@ fun HomeScreen(
         modifier = modifier.fillMaxSize()
     ){
         Scaffold(
-            containerColor = if (drawerState.isOpened()) SurfaceDarker else SurfaceLighter,
+            containerColor = SurfaceDarker,
             modifier = Modifier
-                .fillMaxSize()
-                .then(
-                    if (drawerState.isOpened())
-                        Modifier
-                            .clickable(
-                                onClick ={drawerState = DrawerState.Closed},
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            )
-                    else Modifier
-                ),
+                .fillMaxSize(),
             topBar = {
                 TopAppBar(
                     title = {
@@ -136,14 +122,6 @@ fun HomeScreen(
                             Icon(
                                 painter = painterResource(Resources.Icon.Menu),
                                 contentDescription = "Menu Icon"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {drawerState = drawerState.opposite()}) {
-                            Icon(
-                                painter = painterResource(Resources.Icon.Filter),
-                                contentDescription = "Filter icon"
                             )
                         }
                     }
@@ -280,20 +258,6 @@ fun HomeScreen(
 
         }
 
-        FilterDrawer(
-            visible = drawerState.isOpened(),
-            onCloseClick = {drawerState = drawerState.opposite()},
-            onFilterClick = {
-                viewModel.submitFilter()
-                drawerState = drawerState.opposite()
-                navigateToBook()
-            },
-            checkedItem = filterPriceItem,
-            onSelectFilterPriceItem = {isChecked,filterPriceItem->
-                if (isChecked) viewModel.selectFilterPriceItem(null)
-                else viewModel.selectFilterPriceItem(filterPriceItem)
-            }
-        )
     }
 
 

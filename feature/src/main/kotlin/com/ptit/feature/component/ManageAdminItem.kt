@@ -23,6 +23,7 @@ import com.ptit.shared.FontSize
 import com.ptit.shared.IconSecondary
 import com.ptit.shared.Resources
 import com.ptit.shared.SurfaceDarker
+import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextPrimary
 
 @Composable
@@ -40,7 +41,7 @@ fun ManageAdminItem(
                 shape = RoundedCornerShape(12.dp),
                 color = TextPrimary.copy(alpha = Alpha.TEN_PERCENT)
             )
-            .background(SurfaceDarker)
+            .background(SurfaceLighter)
             .clickable(onClick={onClick(permission.module)})
             .padding(
                 vertical = 12.dp,

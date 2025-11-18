@@ -64,7 +64,7 @@ class HomeViewModel(
 ): ViewModel() {
     val permissions get() = sessionManager.permissions
     val isAdminUnlocked
-        get() = permissions.value.isNotEmpty()
+        get() = permissions.value.size>1
     private val accessTokenFlow
         get() = sessionManager.accessToken
     private var accessToken = ""

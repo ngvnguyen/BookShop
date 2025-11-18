@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ptit.shared.Alpha
+import com.ptit.shared.ButtonPrimary
 import com.ptit.shared.FontSize
 import com.ptit.shared.IconSecondary
 import com.ptit.shared.Resources
@@ -58,7 +59,7 @@ fun OrderSuccessScreen(
             OutlinedButton(
                 onClick = navigateToOrder,
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = IconSecondary.copy(alpha = Alpha.HALF)
+                    containerColor = ButtonPrimary.copy(alpha = Alpha.HALF)
                 )
             ) {
                 Text(

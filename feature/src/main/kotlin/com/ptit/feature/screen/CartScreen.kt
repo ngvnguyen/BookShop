@@ -116,7 +116,7 @@ fun CartScreen(
     val couponCode = viewModel.couponCode
 
     Scaffold(
-        containerColor = SurfaceLighter,
+        containerColor = SurfaceDarker,
         modifier = Modifier
             .fillMaxSize(),
         topBar = {

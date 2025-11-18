@@ -1,7 +1,6 @@
 package com.ptit.feature.navigation
 
 import kotlinx.serialization.Serializable
-import java.io.Serial
 
 @Serializable
 sealed class Screen(){
@@ -34,7 +33,7 @@ sealed class Screen(){
     @Serializable
     object ManageBook: Screen()
     @Serializable
-    object ManageCart: Screen()
+    object ManageOrder: Screen()
     @Serializable
     object ManagePublisher: Screen()
 

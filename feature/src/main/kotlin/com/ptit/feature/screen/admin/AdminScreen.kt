@@ -3,6 +3,7 @@ package com.ptit.feature.screen.admin
 import android.graphics.Paint
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,8 @@ import com.ptit.data.model.dashboard.RevenueByMonthData
 import com.ptit.feature.component.ManageAdminItem
 import com.ptit.feature.permission.Permission
 import com.ptit.shared.Alpha
+import com.ptit.shared.SurfaceDarker
+import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.LoadingCard
@@ -62,7 +65,7 @@ fun AdminScreen(
     navigateToManageCategory:()->Unit,
     navigateToManageAuthor:()->Unit,
     navigateToManageBook:()->Unit,
-    navigateToManageCart:()->Unit,
+    navigateToManageOrder:()->Unit,
     navigateToManagePermission:()->Unit,
     navigateToManagePublisher:()->Unit
 ) {
@@ -73,6 +76,7 @@ fun AdminScreen(
     val rolePermission by adminViewModel.rolePermission
 
     Scaffold(
+        containerColor = SurfaceDarker,
         topBar = {
             TopAppBar(
                 title = {
@@ -227,7 +231,7 @@ fun AdminScreen(
                             )
                             OverviewCard(
                                 modifier = Modifier.weight(1f),
-                                text1 = "Total revenue",
+                                text1 = "Revenue",
                                 text2 = data.totalRevenue.toString(),
                                 icon = Resources.Icon.Money
                             )
@@ -274,12 +278,15 @@ fun AdminScreen(
                                     Permission.Module.BOOKS -> {
                                         navigateToManageBook()
                                     }
-                                    Permission.Module.CARTS -> {
-                                        navigateToManageCart()
-
+                                    Permission.Module.ORDERS -> {
+                                        navigateToManageOrder()
                                     }
                                     Permission.Module.PERMISSIONS -> {
                                         navigateToManagePermission()
+                                    }
+
+                                    Permission.Module.COUPONS -> {
+
                                     }
                                 }
                             }
@@ -391,17 +398,20 @@ fun OrderStatusCard(
                 color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT),
                 shape = RoundedCornerShape(8.dp)
             )
+            .background(SurfaceLighter)
             .padding(16.dp)
     ) {
         Text(
             text = "${data.orderStatus}: ",
             fontWeight = FontWeight.W400,
-            fontSize = FontSize.REGULAR
+            fontSize = FontSize.REGULAR,
+            maxLines = 1
         )
         Text(
             text = "${data.count}",
             fontSize = FontSize.REGULAR,
-            color = TextSecondary
+            color = TextSecondary,
+            maxLines = 1
         )
     }
 }
@@ -421,6 +431,7 @@ fun OverviewCard(
                 color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT),
                 shape = RoundedCornerShape(8.dp)
             )
+            .background(SurfaceLighter)
             .padding(
                 vertical = 16.dp,
                 horizontal = 8.dp
@@ -436,12 +447,14 @@ fun OverviewCard(
         Text(
             text = "$text1: ",
             fontWeight = FontWeight.W400,
-            fontSize = FontSize.REGULAR
+            fontSize = FontSize.REGULAR,
+            maxLines = 1
         )
         Text(
             text = text2,
             fontSize = FontSize.REGULAR,
-            color = TextSecondary
+            color = TextSecondary,
+            maxLines = 1
         )
     }
 }

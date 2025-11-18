@@ -150,6 +150,7 @@ fun ManageUserScreen(
     }
 
     Scaffold(
+        containerColor = SurfaceDarker,
         topBar = {
             AnimatedContent(targetState = searchBarOpened) {visible->
                 if (!visible) {
@@ -334,6 +335,8 @@ fun UserItemCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(SurfaceLighter)
             .border(
                 width = 1.dp,
                 color = Color.Black.copy(alpha = Alpha.TEN_PERCENT),
@@ -351,7 +354,6 @@ fun UserItemCard(
                     color = Color.Black.copy(alpha = Alpha.TEN_PERCENT),
                     shape = RoundedCornerShape(12.dp)
                 )
-                .background(SurfaceDarker)
         ){
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -579,7 +581,7 @@ fun UserFormInterface(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            //.imePadding()
+            .background(SurfaceLighter)
             .padding(bottom = 12.dp)
             .padding(horizontal = 12.dp),
     ) {
@@ -614,7 +616,7 @@ fun UserFormInterface(
                                 painter = painterResource(Resources.Icon.Add),
                                 contentDescription = "image",
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .align(Alignment.Center)
                                     .clickable(onClick = {
                                         pickImageForResult.launch("image/*")
                                     }),
@@ -645,15 +647,6 @@ fun UserFormInterface(
                                     )
                                 },
                             )
-//                        IconButton(
-//                            modifier = Modifier.align(Alignment.TopEnd),
-//                            onClick = {}
-//                        ) {
-//                            Icon(
-//                                painter = painterResource(Resources.Icon.Delete),
-//                                contentDescription = "delete"
-//                            )
-//                        }
                     }
                     uploadState.isLoading()->{
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

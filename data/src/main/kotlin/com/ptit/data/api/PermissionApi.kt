@@ -15,6 +15,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface PermissionApi {
     @POST("api/v1/permissions")
@@ -44,6 +45,7 @@ interface PermissionApi {
 
     @GET("api/v1/permissions")
     suspend fun getAllPermission(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("size") pageSize:Int = 80
     ): Response<ResponseEntity<FetchAllPermissionResponse.Data>>
 }

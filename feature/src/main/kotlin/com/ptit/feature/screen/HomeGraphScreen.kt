@@ -266,7 +266,7 @@ fun HomeGraphScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(SurfaceDarker)
+                        .background(SurfaceLighter)
                         .padding(horizontal = 24.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {

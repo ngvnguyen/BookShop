@@ -3,6 +3,7 @@ package com.ptit.feature.component
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +44,8 @@ import com.ptit.feature.domain.OrderEnum
 import com.ptit.shared.ButtonPrimary
 import com.ptit.shared.FontSize
 import com.ptit.shared.Resources
+import com.ptit.shared.SurfaceDarker
+import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.PrimaryButton
@@ -63,6 +67,7 @@ fun OrderCard(
                 shape = RoundedCornerShape(8.dp),
                 color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
             )
+            .background(SurfaceLighter)
             .clickable(onClick = onClick)
             .padding(8.dp)
     ) {
@@ -103,21 +108,98 @@ fun OrderCard(
             text = "Total price: ${order.summary.finalPrice} ₫",
             modifier = Modifier.align(Alignment.End)
         )
-        if (orderEnum == OrderEnum.DELIVERED || orderEnum == OrderEnum.CANCELLED || orderEnum == OrderEnum.SHIPPED){
-            Button(
-                onClick= {},
-                modifier = Modifier.align(Alignment.End),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ButtonPrimary
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ){
-                Text(
-                    text = "Order again"
-                )
+        when (orderEnum){
+            OrderEnum.PENDING -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick= {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = SurfaceDarker
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ){
+                        Text(
+                            text = "Cancel order"
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Button(
+                        onClick= {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ButtonPrimary
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ){
+                        Text(
+                            text = "View details"
+                        )
+                    }
+                }
+            }
+            OrderEnum.PROCESSING -> {
+                Button(
+                    onClick= {},
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ButtonPrimary
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.align(Alignment.End)
+                ){
+                    Text(
+                        text = "View details"
+                    )
+                }
+            }
+            OrderEnum.DELIVERED,
+            OrderEnum.SHIPPED -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick= {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = SurfaceDarker
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ){
+                        Text(
+                            text = "View details"
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Button(
+                        onClick= {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ButtonPrimary
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ){
+                        Text(
+                            text = "Review"
+                        )
+                    }
+                }
+            }
+
+            OrderEnum.CANCELLED -> {
+                Button(
+                    onClick= {},
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = SurfaceDarker
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.align(Alignment.End)
+                ){
+                    Text(
+                        text = "View details"
+                    )
+                }
             }
         }
-
     }
 }
 

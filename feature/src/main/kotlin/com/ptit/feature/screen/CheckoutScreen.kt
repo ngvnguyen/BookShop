@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -45,10 +46,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import com.ptit.data.DisplayResult
@@ -74,6 +77,7 @@ fun CheckoutScreen(
     val checkoutData by viewModel.checkoutData.collectAsState()
     val context = LocalContext.current
     Scaffold(
+        containerColor = SurfaceDarker,
         topBar = {
             TopAppBar(
                 title = {
@@ -108,199 +112,275 @@ fun CheckoutScreen(
                 ErrorCard(message=e,modifier=Modifier.fillMaxSize())
             },
             onSuccess = {checkout->
-                Column {
-                    Text(
-                        text = "Receive address",
-                        color = TextSecondary,
-                        fontSize = FontSize.EXTRA_REGULAR,
-                        fontWeight = FontWeight.W500,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-                    Column {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = checkout.shippingAddress.name,
-                                fontSize = FontSize.REGULAR,
-                                fontWeight = FontWeight.W500
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = checkout.shippingAddress.phone,
-                                fontSize = FontSize.REGULAR,
-                                fontWeight = FontWeight.W300,
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
-                        }
-                        Text(
-                            text = checkout.shippingAddress.address,
-                            fontSize = FontSize.SMALL,
-                            fontWeight = FontWeight.W300,
-                            color = Color.Black.copy(alpha = Alpha.HALF),
-                            modifier = Modifier.padding(horizontal = 12.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
-                    Text(
-                        text = "Order details",
-                        color = TextSecondary,
-                        fontSize = FontSize.EXTRA_REGULAR,
-                        fontWeight = FontWeight.W500,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp)
+                ) {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.weight(1f)
                     ) {
-                        itemsIndexed(
-                            items = checkout.items
-                        ) {index,item->
-                            if (index!=0) HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                            ProductCard(
-                                item = item
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                    Text(
-                        text = "Note",
-                        color = TextSecondary,
-                        fontSize = FontSize.EXTRA_REGULAR,
-                        fontWeight = FontWeight.W500,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-                    TextField(
-                        value = viewModel.note,
-                        onValueChange = {viewModel.note = it},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(80.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = SurfaceDarker,
-                            unfocusedContainerColor = SurfaceDarker
-                        )
-                    )
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .border(
+                                        width = 1.dp,
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
+                                    )
+                                    .background(SurfaceLighter)
+                                    .padding(8.dp)
+                            ){
+                                Text(
+                                    text = "Receive address",
+                                    color = TextSecondary,
+                                    fontSize = FontSize.EXTRA_REGULAR,
+                                    fontWeight = FontWeight.W500
+                                )
+                                Column {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = checkout.shippingAddress.name,
+                                            fontSize = FontSize.REGULAR,
+                                            fontWeight = FontWeight.W500
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(
+                                            text = checkout.shippingAddress.phone,
+                                            fontSize = FontSize.REGULAR,
+                                            fontWeight = FontWeight.W300,
+                                            color = Color.Black.copy(alpha = Alpha.HALF)
+                                        )
+                                    }
+                                    Text(
+                                        text = checkout.shippingAddress.address,
+                                        fontSize = FontSize.SMALL,
+                                        fontWeight = FontWeight.W300,
+                                        color = Color.Black.copy(alpha = Alpha.HALF),
+                                        modifier = Modifier.padding(horizontal = 12.dp)
+                                    )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Payment method",
-                            color = TextSecondary,
-                            fontSize = FontSize.EXTRA_REGULAR,
-                            fontWeight = FontWeight.W500,
-                        )
-                        Text(
-                            text = checkout.paymentMethods
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Coupon",
-                            color = TextSecondary,
-                            fontSize = FontSize.EXTRA_REGULAR,
-                            fontWeight = FontWeight.W500,
-                        )
-                        Text(
-                            text = checkout.couponInfo?.code?:"No coupon"
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                    Text(
-                        text = "Summary",
-                        color = TextSecondary,
-                        fontSize = FontSize.EXTRA_REGULAR,
-                        fontWeight = FontWeight.W500,
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                    ) {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                }
+                            }
+                        }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Total quantity",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
-                            Text(
-                                text = "${checkout.summary.totalQuantity}",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
+                        item{
+                            Column(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .border(
+                                        width = 1.dp,
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
+                                    )
+                                    .background(SurfaceLighter)
+                                    .padding(8.dp)
+                            ){
+                                Text(
+                                    text = "Order details",
+                                    color = TextSecondary,
+                                    fontSize = FontSize.EXTRA_REGULAR,
+                                    fontWeight = FontWeight.W500,
+                                )
+                                checkout.items.forEachIndexed { index,item->
+                                    if (index!=0) HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                    ProductCard(
+                                        item = item
+                                    )
+                                }
+
+                            }
                         }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Subtotal",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
-                            Text(
-                                text = "${checkout.summary.subtotal} ₫",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .border(
+                                        width = 1.dp,
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
+                                    )
+                                    .background(SurfaceLighter)
+                                    .padding(8.dp)
+                            ){
+                                Text(
+                                    text = "Note",
+                                    color = TextSecondary,
+                                    fontSize = FontSize.EXTRA_REGULAR,
+                                    fontWeight = FontWeight.W500,
+                                )
+                                TextField(
+                                    value = viewModel.note,
+                                    onValueChange = {viewModel.note = it},
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    colors = TextFieldDefaults.colors(
+                                        focusedContainerColor = SurfaceLighter,
+                                        unfocusedContainerColor = SurfaceLighter
+                                    ),
+                                    maxLines = 3,
+                                    keyboardOptions = KeyboardOptions(
+                                        imeAction = ImeAction.Done
+                                    )
+                                )
+                            }
                         }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Discount",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
-                            Text(
-                                text = "-${checkout.summary.cartDiscount} ₫",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .border(
+                                        width = 1.dp,
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
+                                    )
+                                    .background(SurfaceLighter)
+                                    .padding(8.dp)
+                            ){
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Payment method",
+                                        color = TextSecondary,
+                                        fontSize = FontSize.EXTRA_REGULAR,
+                                        fontWeight = FontWeight.W500,
+                                    )
+                                    Text(
+                                        text = checkout.paymentMethods
+                                    )
+                                }
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "Coupon",
+                                        color = TextSecondary,
+                                        fontSize = FontSize.EXTRA_REGULAR,
+                                        fontWeight = FontWeight.W500,
+                                    )
+                                    Text(
+                                        text = checkout.couponInfo?.code?:"No coupon"
+                                    )
+                                }
+                            }
                         }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Shipping fee",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
-                            Text(
-                                text = "${checkout.summary.shippingFee} ₫",
-                                color = Color.Black.copy(alpha = Alpha.HALF)
-                            )
+
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .border(
+                                        width = 1.dp,
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
+                                    )
+                                    .background(SurfaceLighter)
+                                    .padding(8.dp)
+                            ){
+                                Text(
+                                    text = "Summary",
+                                    color = TextSecondary,
+                                    fontSize = FontSize.EXTRA_REGULAR,
+                                    fontWeight = FontWeight.W500,
+                                )
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 12.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Total quantity",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                        Text(
+                                            text = "${checkout.summary.totalQuantity}",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Subtotal",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                        Text(
+                                            text = "${checkout.summary.subtotal} ₫",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Discount",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                        Text(
+                                            text = "-${checkout.summary.cartDiscount} ₫",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Shipping fee",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                        Text(
+                                            text = "${checkout.summary.shippingFee} ₫",
+                                            color = Color.Black.copy(alpha = Alpha.HALF),
+                                            fontSize = FontSize.SMALL
+                                        )
+                                    }
+                                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Grand total",
+                                            fontWeight = FontWeight.W500,
+                                            fontSize = FontSize.REGULAR
+                                        )
+                                        Text(
+                                            text = "${checkout.summary.grandTotal} ₫",
+                                            color = TextSecondary,
+                                            fontWeight = FontWeight.W500,
+                                            fontSize = FontSize.REGULAR
+                                        )
+                                    }
+                                }
+                            }
                         }
-                        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Grand total",
-                                color = TextSecondary,
-                                fontWeight = FontWeight.W500
-                            )
-                            Text(
-                                text = "${checkout.summary.grandTotal} ₫",
-                                color = TextSecondary,
-                                fontWeight = FontWeight.W500
-                            )
-                        }
+
+
+
                     }
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -316,7 +396,9 @@ fun CheckoutScreen(
                             )
                         }
                     )
+
                 }
+
             }
         )
     }

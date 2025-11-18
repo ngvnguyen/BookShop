@@ -28,6 +28,7 @@ import com.ptit.shared.SurfaceLighter
 import org.koin.compose.viewmodel.koinViewModel
 import com.ptit.data.DisplayResult
 import com.ptit.feature.component.OrderCard
+import com.ptit.shared.SurfaceDarker
 import com.ptit.shared.TextPrimary
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.ErrorCard
@@ -44,7 +45,7 @@ fun OrderScreen(
     val selectedTabIndex by viewModel.filterOrderIndex.collectAsState()
     val filteredOrder by viewModel.ordersFilter.collectAsState()
     Scaffold(
-        containerColor = SurfaceLighter,
+        containerColor = SurfaceDarker,
         modifier = Modifier
             .fillMaxSize(),
         topBar = {

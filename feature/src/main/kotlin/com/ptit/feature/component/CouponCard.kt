@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,7 +38,8 @@ import com.ptit.shared.TextSecondary
 fun CouponCard(
     modifier: Modifier = Modifier,
     coupon: CouponData,
-    onClick:()-> Unit
+    onClick:()-> Unit,
+    isSelected: Boolean
 ){
     Box(
         modifier = modifier
@@ -53,7 +55,6 @@ fun CouponCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-
         ) {
             Box(
                 modifier = Modifier
@@ -103,6 +104,12 @@ fun CouponCard(
                     maxLines = 1
                 )
             }
+
+            RadioButton(
+                selected = isSelected,
+                onClick = onClick,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
         }
     }
 }
@@ -119,13 +126,13 @@ class ZigZagShape(
         val path = Path().apply {
             moveTo(0f,0f)
             var y = 0f
-            lineTo(size.width - zigZag,0f)
-            while (y<size.height){
-                lineTo(size.width,y+zigZag/2)
-                lineTo(size.width-zigZag,y+zigZag)
-                y+=zigZag
+            while (y+zigZag<size.height){
+                lineTo(zigZag, y + zigZag / 2)
+                lineTo(0f, y + zigZag)
+                y += zigZag
             }
-            lineTo(0f,y)
+            lineTo(size.width,y)
+            lineTo(size.width,0f)
             close()
         }
         return Outline.Generic(path)

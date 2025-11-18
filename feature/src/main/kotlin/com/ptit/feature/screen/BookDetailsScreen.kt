@@ -38,6 +38,7 @@ import com.ptit.shared.FontSize
 import com.ptit.shared.IconSecondary
 import com.ptit.shared.Resources
 import com.ptit.shared.Surface
+import com.ptit.shared.SurfaceDarker
 import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.bebasNeueFont
@@ -58,6 +59,7 @@ fun BookDetailsScreen(
     val context = LocalContext.current
 
     Scaffold(
+        containerColor = SurfaceDarker,
         topBar = {
             TopAppBar(
                 title = {
@@ -100,7 +102,7 @@ fun BookDetailsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(180.dp)
-                                    .background(Surface.copy(alpha = Alpha.TWENTY_PERCENT))
+                                    .background(SurfaceLighter)
                                     .padding(vertical = 8.dp),
                                 contentAlignment = Alignment.Center
                             ){

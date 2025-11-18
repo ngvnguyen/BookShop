@@ -2,6 +2,7 @@ package com.ptit.feature.screen.admin
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +51,7 @@ import com.ptit.shared.Alpha
 import com.ptit.shared.FontSize
 import com.ptit.shared.IconSecondary
 import com.ptit.shared.Resources
+import com.ptit.shared.SurfaceDarker
 import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.CustomTextFieldWithLabel
@@ -97,6 +99,7 @@ fun ManageCategoryScreen(
     val context = LocalContext.current
 
     Scaffold(
+        containerColor = SurfaceDarker,
         topBar = {
             TopAppBar(
                 title = {
@@ -222,6 +225,7 @@ fun CategoryCard(
                 color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT),
                 shape = RoundedCornerShape(8.dp)
             )
+            .background(SurfaceLighter)
             .clickable(onClick = onClick)
             .padding(16.dp)
     ){
@@ -236,7 +240,7 @@ fun CategoryCard(
                     fontWeight = FontWeight.W400
                 )
                 Text(
-                    text = categoryForm.description,
+                    text = "Description: ${categoryForm.description}",
                     color = Color.Black.copy(alpha = Alpha.HALF),
                     fontSize = FontSize.SMALL
                 )

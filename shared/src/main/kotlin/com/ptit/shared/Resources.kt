@@ -45,6 +45,7 @@ object Resources{
         val Filter = R.drawable.filter
         val Check = R.drawable.check
         val Money = R.drawable.money
+        val Voucher = R.drawable.voucher
     }
     object Image{
         val ShoppingCart = R.drawable.shopping_cart_image

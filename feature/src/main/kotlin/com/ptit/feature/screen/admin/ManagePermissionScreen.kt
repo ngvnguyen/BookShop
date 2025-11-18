@@ -105,6 +105,7 @@ fun ManagePermissionScreen(
         }
     }
     Scaffold(
+        containerColor = SurfaceDarker,
         topBar = {
             TopAppBar(
                 title = {
@@ -258,7 +259,7 @@ fun PermissionItem(
                 color = TextPrimary.copy(alpha = Alpha.TEN_PERCENT),
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(SurfaceDarker)
+            .background(SurfaceLighter)
             .clickable(onClick=onClick)
 
     ){
@@ -282,6 +283,7 @@ fun PermissionItem(
                         Permission.Method.POST-> Color.Yellow
                         Permission.Method.PUT-> Color.Blue
                         Permission.Method.DELETE-> Color.Red
+                        Permission.Method.PATCH -> Color.Blue
                     },
                     fontWeight = FontWeight.W500
                 )
@@ -301,7 +303,7 @@ fun PermissionItem(
                     text = permissionData.status.name,
                     color = when(permissionData.status){
                         Permission.Status.ACTIVE-> Color.Green
-                        Permission.Status.INACTIVE-> Color.Red
+                        Permission.Status.INACTIVE,Permission.Status.DELETED-> Color.Red
                     },
                     fontWeight = FontWeight.W400
                 )

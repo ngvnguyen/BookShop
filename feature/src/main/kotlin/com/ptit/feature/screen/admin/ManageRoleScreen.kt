@@ -107,6 +107,7 @@ fun ManageRoleScreen(
         }
     }
     Scaffold(
+        containerColor = SurfaceDarker,
         topBar = {
             TopAppBar(
                 title = {
@@ -260,7 +261,7 @@ fun RoleItemCard(
                     color = Color.Black.copy(alpha = Alpha.TEN_PERCENT),
                     shape = RoundedCornerShape(12.dp)
                 )
-                .background(SurfaceDarker)
+                .background(SurfaceLighter)
                 .clickable(onClick = onClick)
                 .padding(
                     vertical = 8.dp,

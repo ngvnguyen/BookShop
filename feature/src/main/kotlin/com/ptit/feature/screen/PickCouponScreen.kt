@@ -40,6 +40,7 @@ fun PickCouponScreen(
     val viewModel = koinViewModel<CouponViewModel>()
     val coupons by viewModel.filterCoupons.collectAsState()
     val filterCode = viewModel.filterCode
+    val selectedCouponCode = viewModel.selectedCouponCode
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,7 +52,6 @@ fun PickCouponScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        viewModel.selectCoupon(null)
                         navigateBack()
                     }) {
                         Icon(
@@ -108,9 +108,12 @@ fun PickCouponScreen(
                             CouponCard(
                                 coupon = coupon,
                                 onClick = {
-                                    viewModel.selectCoupon(coupon)
-                                    navigateBack()
-                                }
+                                    viewModel.selectCoupon(
+                                        if (selectedCouponCode == coupon.code) null
+                                        else coupon
+                                    )
+                                },
+                                isSelected = selectedCouponCode == coupon.code
                             )
                         }
                     }

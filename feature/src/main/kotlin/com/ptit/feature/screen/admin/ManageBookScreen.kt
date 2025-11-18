@@ -9,6 +9,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -256,6 +257,7 @@ fun ManageBookScreen(
             }
         }else{
             Scaffold(
+                containerColor = SurfaceDarker,
                 topBar = {
                     AnimatedContent(targetState = searchBarOpened) {visible->
                         if (!visible) {
@@ -710,6 +712,7 @@ fun BookItemCard(
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
+            .background(SurfaceLighter)
             .padding(8.dp)
     ){
         Column(

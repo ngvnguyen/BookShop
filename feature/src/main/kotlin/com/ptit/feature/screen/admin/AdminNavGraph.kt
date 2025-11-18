@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ptit.feature.navigation.Screen
 import com.ptit.feature.viewmodel.AdminViewModel
-import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.adminNavGraph(
     navController: NavController,
@@ -31,8 +30,8 @@ fun NavGraphBuilder.adminNavGraph(
             navigateToManageBook = {
                 navController.navigate(Screen.ManageBook)
             },
-            navigateToManageCart = {
-                navController.navigate(Screen.ManageCart)
+            navigateToManageOrder = {
+                navController.navigate(Screen.ManageOrder)
             },
             navigateToManagePermission = {
                 navController.navigate(Screen.ManagePermission)
@@ -93,7 +92,7 @@ fun NavGraphBuilder.adminNavGraph(
             adminViewModel = adminViewModel
         )
     }
-    composable<Screen.ManageCart> {
+    composable<Screen.ManageOrder> {
 
     }
     composable<Screen.ManagePublisher> {

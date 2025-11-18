@@ -28,12 +28,12 @@ data class Permission(
         fun isDelete() = this.method == Method.DELETE
     }
     enum class Status{
-        ACTIVE,INACTIVE;
+        ACTIVE,INACTIVE,DELETED;
         fun isActive() = this == ACTIVE
     }
 
     enum class Method{
-        GET,POST,PUT,DELETE
+        GET,POST,PUT,DELETE,PATCH
     }
     enum class Module(
         val title:String,
@@ -45,8 +45,9 @@ data class Permission(
         AUTHORS("Manage Author",Resources.Icon.Author),
         PUBLISHERS("Manage Publisher",Resources.Icon.Domain),
         BOOKS("Manage Book",Resources.Icon.Book),
-        CARTS("Manage Cart",Resources.Icon.ShoppingCart),
-        PERMISSIONS("Manage Permission",Resources.Icon.Key)
+        PERMISSIONS("Manage Permission",Resources.Icon.Key),
+        ORDERS("Manage Order",Resources.Icon.ShoppingCart),
+        COUPONS("Manage Coupons",Resources.Icon.Voucher),
     }
 
     fun isUser() = this.module == Module.USERS
@@ -55,7 +56,6 @@ data class Permission(
     fun isAuthor() = this.module == Module.AUTHORS
     fun isPublisher() = this.module == Module.PUBLISHERS
     fun isBook() = this.module == Module.BOOKS
-    fun isCart() = this.module == Module.CARTS
     fun isPermission() = this.module == Module.PERMISSIONS
 }
 
@@ -63,13 +63,32 @@ fun PermissionResponseData.toPermissionData() =
     Permission.PermissionData(
         id = this.id,
         name = this.name,
-        method = Permission.Method.valueOf(this.method),
+        method = this.getMethod(),
         createdAt = this.createdAt,
         createdBy = this.createdBy,
         apiPath = this.apiPath,
         status = Permission.Status.valueOf(this.status)
     )
-fun PermissionResponseData.getModule() = Permission.Module.valueOf(this.module)
+fun PermissionResponseData.getModule(): Permission.Module {
+    try {
+        val module = Permission.Module.valueOf(this.module)
+        return module
+    }catch (e: Exception){
+        e.printStackTrace()
+        println(module)
+        return Permission.Module.BOOKS
+    }
+}
+fun PermissionResponseData.getMethod(): Permission.Method {
+    try {
+        val method = Permission.Method.valueOf(this.method)
+        return method
+    }catch (e: Exception){
+        e.printStackTrace()
+        println(method)
+        return Permission.Method.GET
+    }
+}
 fun List<PermissionResponseData>.toPermissions(): List<Permission>{
     val map = this.distinct().groupBy { it.getModule() }
     return map.map{(module, listPermissionResponseData)->
@@ -77,36 +96,5 @@ fun List<PermissionResponseData>.toPermissions(): List<Permission>{
             data = listPermissionResponseData.map { it.toPermissionData() },
             module = module
         )
-    }
-}
-fun List<Permission>.addPermission(
-    newPermissionData: Permission.PermissionData,
-    module: Permission.Module)
-: List<Permission> {
-    val existingPermission = this.find { it.module == module}
-    return if (existingPermission!=null){
-        val updatedData = existingPermission.data.filterNot { it.id == newPermissionData.id }+
-                newPermissionData
-        this.map {
-            if (it.module!=module) it
-            else it.copy(data = updatedData)
-        }
-
-    }else
-        this+
-            Permission(
-                data = listOf(newPermissionData),
-                module = module
-            )
-}
-fun List<Permission>.deletePermission(
-    id:Int
-): List<Permission>{
-    return this.map { permission->
-        if (permission.data.any{it.id == id}){
-            permission.copy(
-                data = permission.data.filterNot { it.id == id }
-            )
-        }else permission
     }
 }

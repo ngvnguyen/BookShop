@@ -1,10 +1,12 @@
 package com.ptit.feature.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +21,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,28 +104,38 @@ fun BookCard(
                 fontWeight = FontWeight.W500,
                 modifier = Modifier.width(cardWidth)
             )
-
-            BadgedBox(
-                badge = {
-                    Text(
-                        text = "-${item.discount}%",
-                        fontSize = 8.sp,
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = Color.Red,
-                        fontStyle = FontStyle.Italic,
-                        maxLines = 1
-                    )
-                },
-                modifier = Modifier
-                    .padding(end = 8.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "${item.price.toInt()} ₫",
-                    fontSize = FontSize.SMALL,
                     modifier = Modifier.widthIn(max = cardWidth),
-                    maxLines = 1
+                    maxLines = 1,
+                    textDecoration = TextDecoration.LineThrough,
+                    fontSize = FontSize.EXTRA_SMALL
+
+                )
+                Text(
+                    text = "-${item.discount}%",
+                    fontSize = 9.sp,
+                    color = Color.White,
+                    fontStyle = FontStyle.Italic,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color.Red),
+                    style = TextStyle()
                 )
             }
+
+            Text(
+                text = "${(item.price - item.price*item.discount/100).toInt()} ₫",
+                modifier = Modifier.widthIn(max = cardWidth),
+                maxLines = 1,
+                fontSize = FontSize.SMALL
+            )
+
 
         }
     }

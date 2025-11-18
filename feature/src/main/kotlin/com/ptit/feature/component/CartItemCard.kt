@@ -1,6 +1,7 @@
 package com.ptit.feature.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,15 +27,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.ptit.data.model.cart.CartData
 import com.ptit.shared.Alpha
 import com.ptit.shared.FontSize
 import com.ptit.shared.QuantityCounterSize
 import com.ptit.shared.Resources
+import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.QuantityCounter
@@ -56,6 +61,7 @@ fun CartItemCard(
             .fillMaxWidth()
             .clickable(onClick = onItemClick)
             .clip(RoundedCornerShape(8.dp))
+            .background(SurfaceLighter)
             .border(
                 width = 1.dp,
                 color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT),
@@ -64,7 +70,6 @@ fun CartItemCard(
     ){
         Row(
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(8.dp)
                 .height(120.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -99,16 +104,39 @@ fun CartItemCard(
                 Text(
                     text = item.productName,
                     fontSize = FontSize.EXTRA_REGULAR,
-                    fontWeight = FontWeight.W500
+                    fontWeight = FontWeight.W500,
+                    maxLines = 2,
+                    modifier = Modifier.fillMaxWidth(0.85f)
                 )
-                Text(
-                    text = "-${item.discount}%",
-                    fontSize = FontSize.EXTRA_SMALL,
-                    fontWeight = FontWeight.W300,
-                    color = TextSecondary,
-                    fontStyle = FontStyle.Italic
-                )
+
                 Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${item.unitPrice}",
+                        fontSize = FontSize.SMALL,
+                        textDecoration = TextDecoration.LineThrough
+                    )
+                    Text(
+                        text = " ₫",
+                        fontSize = FontSize.EXTRA_SMALL
+                    )
+                    Text(
+                        text = "-${item.discount}%",
+                        fontSize = 9.sp,
+                        color = Color.White,
+                        fontStyle = FontStyle.Italic,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(Color.Red),
+                        style = TextStyle()
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -34,7 +34,8 @@ class CouponViewModel(
     private var accessToken = ""
     var filterCode by mutableStateOf("")
     private val code = MutableStateFlow("")
-
+    val selectedCouponCode
+        get() = sharedState.couponCode
     init{
         viewModelScope.launch {
             accessToken = accessTokenFlow.filterNotNull().first()

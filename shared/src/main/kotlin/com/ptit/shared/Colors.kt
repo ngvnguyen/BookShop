@@ -3,7 +3,7 @@ package com.ptit.shared
 import androidx.compose.ui.graphics.Color
 
 val GrayLighter = Color(0xFFFAFAFA)
-val Gray = Color(0xFFF1F1F1)
+val Gray = Color(0xFFF6F5F5)
 val GrayDarker = Color(0xFFD9D6D6)
 
 val Yellowish = Color(0xFFEEFF00)

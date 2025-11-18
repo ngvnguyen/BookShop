@@ -87,7 +87,7 @@ fun BookScreen(
     val maxPage by viewModel.maxPage.collectAsState()
     Box(modifier = modifier.fillMaxSize()){
         Scaffold(
-            containerColor = if (drawerState.isOpened()) SurfaceDarker else SurfaceLighter,
+            containerColor = SurfaceDarker,
             modifier = Modifier
                 .fillMaxSize()
                 .then(
