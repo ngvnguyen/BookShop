@@ -109,7 +109,6 @@ class HomeViewModel(
                 val response = bookRepository.searchBookPaged(
                     accessToken = token,
                     page = currentPage.value,
-                    pageSize = 21,
                     name = bookFilter.name,
                     categoryQuery = bookFilter.category,
                     authorQuery = bookFilter.author,
