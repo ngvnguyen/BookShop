@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -217,20 +218,22 @@ fun BookScreen(
                                         verticalArrangement = Arrangement.spacedBy(16.dp)
                                     ) {
                                         items(
-                                            items = books.chunked(3)
+                                            items = books.chunked(2)
                                         ) {bookChunked->
                                             Row(
                                                 modifier = Modifier
                                                     .padding(horizontal = 8.dp)
                                                     .fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                                             ) {
                                                 bookChunked.forEach {
                                                     BookCard(
                                                         item = it,
                                                         onClick = {
                                                             navigateToBookDetails(it.id)
-                                                        }
+                                                        },
+                                                        imageHeight = 250.dp,
+                                                        modifier = Modifier.weight(1f)
                                                     )
                                                 }
                                             }
