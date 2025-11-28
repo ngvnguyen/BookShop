@@ -233,7 +233,7 @@ fun BookScreen(
                                                             navigateToBookDetails(it.id)
                                                         },
                                                         imageHeight = 250.dp,
-                                                        modifier = Modifier.weight(1f)
+                                                        modifier = if (bookChunked.size == 2)Modifier.weight(1f) else Modifier
                                                     )
                                                 }
                                             }
