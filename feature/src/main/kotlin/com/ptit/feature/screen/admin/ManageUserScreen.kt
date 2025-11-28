@@ -689,6 +689,15 @@ fun UserFormInterface(
                     keyboardType = KeyboardType.Email
                 )
             )
+            if (action == Action.CREATE){
+                CustomTextFieldWithLabel(
+                    value = userForm.password,
+                    onValueChange = {
+                        viewModel.updateUserPassword(it)
+                    },
+                    label = "Password"
+                )
+            }
             CustomTextFieldWithLabel(
                 value = userForm.dateOfBirth?.let {viewModel.getDateString(it)}?:"",
                 onValueChange = {},

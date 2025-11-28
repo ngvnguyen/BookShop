@@ -65,6 +65,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -562,7 +563,9 @@ class AdminViewModel(
     }
 
     fun getLocalDateFromLong(time:Long): LocalDate{
-        return LocalDate.ofEpochDay(time)
+        return Instant.ofEpochMilli(time)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
     }
     fun resetUploadState(){
         uploadState = RequestState.IDLE
