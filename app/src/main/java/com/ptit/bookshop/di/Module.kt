@@ -42,6 +42,7 @@ import com.ptit.feature.viewmodel.ChangePasswordViewModel
 import com.ptit.feature.viewmodel.CheckoutViewModel
 import com.ptit.feature.viewmodel.CouponViewModel
 import com.ptit.feature.viewmodel.HomeViewModel
+import com.ptit.feature.viewmodel.OrderDetailViewModel
 import com.ptit.feature.viewmodel.OrderViewModel
 import com.ptit.feature.viewmodel.ProfileViewModel
 import com.ptit.feature.viewmodel.ResetPasswordViewModel
@@ -84,4 +85,5 @@ val module = module{
     viewModelOf(::CouponViewModel)
     viewModelOf(::CheckoutViewModel)
     viewModelOf(::OrderViewModel)
+    viewModelOf(::OrderDetailViewModel)
 }

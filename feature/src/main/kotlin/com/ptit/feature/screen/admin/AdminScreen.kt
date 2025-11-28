@@ -67,7 +67,8 @@ fun AdminScreen(
     navigateToManageBook:()->Unit,
     navigateToManageOrder:()->Unit,
     navigateToManagePermission:()->Unit,
-    navigateToManagePublisher:()->Unit
+    navigateToManagePublisher:()->Unit,
+    navigateToManageCoupon:()->Unit
 ) {
     val adminViewModel = koinViewModel<AdminViewModel>()
     val orderStatusCountData by adminViewModel.orderStatusCountData.collectAsState()
@@ -286,7 +287,7 @@ fun AdminScreen(
                                     }
 
                                     Permission.Module.COUPONS -> {
-
+                                        navigateToManageCoupon()
                                     }
                                 }
                             }

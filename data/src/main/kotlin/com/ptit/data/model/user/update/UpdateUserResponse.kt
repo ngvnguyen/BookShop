@@ -8,7 +8,7 @@ class UpdateUserResponse private constructor(){
     @Serializable
     data class Data(
         @SerialName("avatar_url")
-        val avatarUrl: String,
+        val avatarUrl: String?,
         @SerialName("created_at")
         val createdAt: String,
         @SerialName("created_by")

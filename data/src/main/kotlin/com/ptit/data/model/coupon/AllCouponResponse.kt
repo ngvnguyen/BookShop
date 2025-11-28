@@ -1,6 +1,5 @@
 package com.ptit.data.model.coupon
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

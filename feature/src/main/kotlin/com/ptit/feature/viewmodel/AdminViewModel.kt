@@ -9,9 +9,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
+import com.ptit.data.model.coupon.CouponData
 import com.ptit.data.repository.AuthorRepository
 import com.ptit.data.repository.BookRepository
 import com.ptit.data.repository.CategoryRepository
+import com.ptit.data.repository.CouponRepository
 import com.ptit.data.repository.DashboardRepository
 import com.ptit.data.repository.PermissionRepository
 import com.ptit.data.repository.PublisherRepository
@@ -25,6 +27,7 @@ import com.ptit.feature.domain.Gender
 import com.ptit.feature.form.AuthorForm
 import com.ptit.feature.form.BookForm
 import com.ptit.feature.form.CategoryForm
+import com.ptit.feature.form.CouponForm
 import com.ptit.feature.form.PermissionForm
 import com.ptit.feature.form.PublisherForm
 import com.ptit.feature.form.RoleForm
@@ -32,6 +35,8 @@ import com.ptit.feature.form.UserForm
 import com.ptit.feature.form.toAuthorForm
 import com.ptit.feature.form.toBookForm
 import com.ptit.feature.form.toCategoryForm
+import com.ptit.feature.form.toCouponForm
+import com.ptit.feature.form.toCouponRequestForm
 import com.ptit.feature.form.toCreateBookForm
 import com.ptit.feature.form.toCreateCategoryForm
 import com.ptit.feature.form.toCreatePermissionForm
@@ -61,6 +66,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 
@@ -92,6 +98,7 @@ class AdminViewModel(
     private val roleRepository: RoleRepository,
     private val userRepository: UserRepository,
     private val dashboardRepository: DashboardRepository,
+    private val couponRepository : CouponRepository,
     private val uploadImageHelper: UploadImageHelper,
     private val sessionManager: SessionManager
 ) : ViewModel() {
@@ -318,6 +325,25 @@ class AdminViewModel(
             initialValue = RequestState.LOADING
         )
 
+    var refreshCouponTrigger = MutableStateFlow(0)
+    val allCoupon: StateFlow<RequestState<List<CouponForm>>> =
+        combine(accessTokenFlow,refreshCouponTrigger){ token, _->
+            token
+        }.flatMapLatest {token->
+            flow {
+                emit(RequestState.LOADING)
+                token?.let {
+                    val response = couponRepository.getAllCouponsAdmin(accessToken)
+                    if (response.isSuccess()) emit(RequestState.SUCCESS(response.getSuccessData().map { it.toCouponForm() }))
+                    else emit(RequestState.ERROR(response.getErrorMessage()))
+                }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = RequestState.LOADING
+        )
+
     var permissionForm by mutableStateOf(PermissionForm(createdBy = email));private set
     val isPermissionFormValid :Boolean
         get() = permissionForm.name.isNotBlank() &&
@@ -344,6 +370,7 @@ class AdminViewModel(
                 bookForm.language.isNotBlank()
 
     var categoryForm by mutableStateOf(CategoryForm());private set
+    var couponForm by mutableStateOf(CouponForm());private set
 
     var action by mutableStateOf(Action.IDLE)
     var uploadState: RequestState<Unit> by mutableStateOf(RequestState.IDLE)
@@ -779,6 +806,87 @@ class AdminViewModel(
                 onSuccess()
                 refreshCategoryTrigger.value++
             }else onError(response.getErrorMessage())
+        }
+    }
+
+    fun selectCouponForm(couponForm: CouponForm){
+        this.couponForm = couponForm
+    }
+    fun resetCouponForm() {
+        couponForm = CouponForm()
+    }
+
+    fun updateCouponForm(
+        code: String? = null,
+        name: String? = null,
+        description: String? = null,
+        discountType : CouponData.CouponType? = null,
+        discountValue: Int? = null,
+        maximumDiscountAmount: Int? = null,
+        minimumOrderAmount: Int? = null,
+        usageLimit: Int? = null,
+        usageLimitPerCustomer: Int? = null,
+        startsAt : LocalDateTime? = null,
+        expiresAt : LocalDateTime? = null,
+        status: CouponData.Status? = null
+    ) {
+        if (startsAt!=null) println(startsAt.toString())
+        couponForm = couponForm.copy(
+            code = code ?: couponForm.code,
+            name = name ?: couponForm.name,
+            description = description ?: couponForm.description,
+            discountType = discountType ?: couponForm.discountType,
+            discountValue = discountValue ?: couponForm.discountValue,
+            maximumDiscountAmount = maximumDiscountAmount ?: couponForm.maximumDiscountAmount,
+            minimumOrderAmount = minimumOrderAmount ?: couponForm.minimumOrderAmount,
+            usageLimit = usageLimit ?: couponForm.usageLimit,
+            usageLimitPerCustomer = usageLimitPerCustomer ?: couponForm.usageLimitPerCustomer,
+            startsAt = startsAt?: couponForm.startsAt,
+            expiresAt = expiresAt?: couponForm.expiresAt,
+            status = status ?: couponForm.status
+        )
+    }
+    fun createCoupon(
+        onSuccess: suspend (String) -> Unit,
+        onError : suspend (String) -> Unit
+    ){
+        viewModelScope.launch {
+            val response = couponRepository.createCoupon(accessToken,couponForm.toCouponRequestForm())
+            if (response.isSuccess()){
+                onSuccess(response.getSuccessData())
+                refreshCouponTrigger.value++
+            }else{
+                onError(response.getErrorMessage())
+            }
+        }
+    }
+    fun updateCoupon(
+        onSuccess: suspend (String) -> Unit,
+        onError : suspend (String) -> Unit
+    ){
+        viewModelScope.launch {
+            val response = couponRepository.updateCoupon(accessToken,couponForm.id,couponForm.toCouponRequestForm())
+            if (response.isSuccess()){
+                onSuccess(response.getSuccessData())
+                refreshCouponTrigger.value++
+            }else{
+                onError(response.getErrorMessage())
+            }
+        }
+    }
+
+    fun deleteCoupon(
+        id:String,
+        onSuccess: suspend (String) -> Unit,
+        onError : suspend (String) -> Unit
+    ){
+        viewModelScope.launch {
+            val response = couponRepository.deleteCoupon(accessToken,id)
+            if (response.isSuccess()) {
+                onSuccess(response.getSuccessData())
+                refreshCouponTrigger.value++
+            }
+            else onError(response.getErrorMessage())
         }
     }
 }

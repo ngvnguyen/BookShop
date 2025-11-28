@@ -1,14 +1,24 @@
 package com.ptit.feature.screen
 
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
@@ -17,17 +27,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ptit.feature.domain.OrderEnum
 import com.ptit.feature.viewmodel.OrderViewModel
 import com.ptit.shared.FontSize
 import com.ptit.shared.Resources
-import com.ptit.shared.SurfaceLighter
 import org.koin.compose.viewmodel.koinViewModel
 import com.ptit.data.DisplayResult
 import com.ptit.feature.component.OrderCard
+import com.ptit.shared.ButtonPrimary
 import com.ptit.shared.SurfaceDarker
 import com.ptit.shared.TextPrimary
 import com.ptit.shared.TextSecondary
@@ -44,6 +59,9 @@ fun OrderScreen(
     val tabs = OrderEnum.entries
     val selectedTabIndex by viewModel.filterOrderIndex.collectAsState()
     val filteredOrder by viewModel.ordersFilter.collectAsState()
+    var cancelOrderDialogVisible by remember { mutableStateOf(false) }
+    var selectedOrderId by remember { mutableIntStateOf(-1) }
+    val context = LocalContext.current
     Scaffold(
         containerColor = SurfaceDarker,
         modifier = Modifier
@@ -118,12 +136,82 @@ fun OrderScreen(
                         ) {order->
                             OrderCard(
                                 order = order,
-                                onClick = {},
+                                onViewDetailClick = {navigateToOrderDetails(order.id)},
+                                onCancelOrderClick = {
+                                    cancelOrderDialogVisible = true
+                                    selectedOrderId = order.id
+                                },
+                                onReviewClick = {},
                                 orderEnum = OrderEnum.getOrderTabByIndex(selectedTabIndex)
                             )
                         }
                     }
 
+                }
+                AnimatedVisibility(visible = cancelOrderDialogVisible){
+                    AlertDialog(
+                        title = {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Are you sure you want to cancel this order?",
+                                    fontSize = FontSize.REGULAR,
+                                    modifier = Modifier.fillMaxWidth(0.8f)
+                                )
+                                Icon(
+                                    painter = painterResource(Resources.Icon.Close),
+                                    contentDescription = "close",
+                                    modifier = Modifier
+                                        .clickable(onClick = {
+                                            cancelOrderDialogVisible = false
+                                        })
+                                )
+                            }
+                        },
+                        onDismissRequest = {},
+                        confirmButton = {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                OutlinedButton(
+                                    onClick = {viewModel.cancelOrder(
+                                        id = selectedOrderId,
+                                        onSuccess = {
+                                            cancelOrderDialogVisible = false
+                                            Toast.makeText(context,"Cancel order successfully",Toast.LENGTH_SHORT).show()
+                                        },
+                                        onError = {e->
+                                            Toast.makeText(context,e,Toast.LENGTH_SHORT).show()
+                                        }
+                                    )}
+                                ) {
+                                    Text(
+                                        text = "Yes"
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(48.dp))
+                                OutlinedButton(
+                                    onClick = {
+                                        cancelOrderDialogVisible = false
+                                    },
+
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = ButtonPrimary
+                                    )
+                                ) {
+                                    Text(
+                                        text = "No"
+                                    )
+                                }
+
+                            }
+                        }
+                    )
                 }
             }
         )

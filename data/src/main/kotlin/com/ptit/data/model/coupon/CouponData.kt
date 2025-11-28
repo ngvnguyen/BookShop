@@ -1,6 +1,5 @@
 package com.ptit.data.model.coupon
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -29,7 +28,7 @@ data class CouponData(
     @SerialName("starts_at")
     val startsAt: String,
     @SerialName("status")
-    val status: String,
+    val status: Status,
     @SerialName("updated_at")
     val updatedAt: String,
     @SerialName("usage_limit")
@@ -42,5 +41,10 @@ data class CouponData(
         PERCENTAGE("Percentage"),
         FIXED_AMOUNT("Fixed Amount"),
         FREE_SHIPPING("Free Shipping")
+    }
+    @Serializable
+    enum class Status{
+        ACTIVE,INACTIVE,DELETED;
+        fun isActive() = this == ACTIVE
     }
 }

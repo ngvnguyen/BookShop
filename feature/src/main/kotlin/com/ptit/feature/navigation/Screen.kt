@@ -9,6 +9,8 @@ sealed class Screen(){
     @Serializable
     object Profile:Screen()
     @Serializable
+    object About:Screen()
+    @Serializable
     object ForgotPassword:Screen()
     @Serializable
     data class ResetPassword(val email:String): Screen()
@@ -36,6 +38,8 @@ sealed class Screen(){
     object ManageOrder: Screen()
     @Serializable
     object ManagePublisher: Screen()
+    @Serializable
+    object ManageCoupon : Screen()
 
     @Serializable
     object HomeGraph:Screen(){

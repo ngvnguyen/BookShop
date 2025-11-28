@@ -1,6 +1,5 @@
 package com.ptit.data.model.coupon
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -27,5 +26,7 @@ data class CouponRequestForm(
     @SerialName("usage_limit")
     val usageLimit: Int,
     @SerialName("usage_limit_per_customer")
-    val usageLimitPerCustomer: Int
+    val usageLimitPerCustomer: Int,
+    @SerialName("status")
+    val status: CouponData.Status
 )

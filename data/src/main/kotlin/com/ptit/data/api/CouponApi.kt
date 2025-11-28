@@ -25,14 +25,14 @@ interface CouponApi {
     suspend fun updateCoupon(
         @Header("Authorization") token: String,
         @Body body: CouponRequestForm,
-        @Path("id") id: Int
+        @Path("id") id: String
     ): Response<ResponseEntity<CouponData>>
 
     @DELETE("/api/v1/coupons/{id}")
     suspend fun deleteCoupon(
         @Header("Authorization") token: String,
-        @Path("id") id: Int
-    ): Response<ResponseEntity<Unit>>
+        @Path("id") id: String
+    ): Response<String>
 
     @GET("/api/v1/coupons")
     suspend fun getAllCoupons(
@@ -42,7 +42,18 @@ interface CouponApi {
     @GET("/api/v1/coupons/{id}")
     suspend fun getCouponById(
         @Header("Authorization") token: String,
+        @Path("id") id: String
+    ): Response<ResponseEntity<CouponData>>
+
+    @GET("/api/v1/admin/coupons/{id}")
+    suspend fun getCouponAdminById(
+        @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Response<ResponseEntity<CouponData>>
+
+    @GET("/api/v1/admin/coupons")
+    suspend fun getAllCouponsAdmin(
+        @Header("Authorization") token: String,
+    ): Response<ResponseEntity<AllCouponResponse>>
 
 }

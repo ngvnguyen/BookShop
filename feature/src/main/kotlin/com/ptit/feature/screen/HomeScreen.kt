@@ -3,6 +3,9 @@ package com.ptit.feature.screen
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,6 +23,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,18 +39,22 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -51,12 +63,15 @@ import androidx.compose.ui.unit.dp
 import com.ptit.data.DisplayResult
 import com.ptit.feature.component.BookCard
 import com.ptit.feature.component.FilterDrawer
+import com.ptit.feature.domain.BannerItem
 import com.ptit.feature.domain.DrawerState
 import com.ptit.feature.domain.isOpened
 import com.ptit.feature.domain.opposite
 import com.ptit.feature.form.BookForm
 import com.ptit.feature.viewmodel.HomeViewModel
+import com.ptit.shared.Alpha
 import com.ptit.shared.FontSize
+import com.ptit.shared.IconPrimary
 import com.ptit.shared.IconSecondary
 import com.ptit.shared.Resources
 import com.ptit.shared.SurfaceDarker
@@ -64,6 +79,9 @@ import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.component.CustomSearchBar
 import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.LoadingCard
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,6 +202,10 @@ fun HomeScreen(
                                     .padding(horizontal = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
+                                item {
+                                    BannerRow()
+                                }
+
                                 item {
                                     Column(
                                         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -320,5 +342,93 @@ fun HorizontalBookCarousel(
             )
         }
     }
+}
+
+@Composable
+fun BannerRow(
+    modifier : Modifier = Modifier
+){
+    val scope = rememberCoroutineScope()
+    val bannerItems = BannerItem.entries
+    val pagerState = rememberPagerState{bannerItems.size}
+    var selectedIndex by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        snapshotFlow { pagerState.currentPage }.collect { selectedIndex = it }
+    }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        HorizontalPager(
+            state = pagerState
+        ) { index->
+            val banner = bannerItems[index]
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ){
+                Image(
+                    painter = painterResource(banner.image),
+                    contentDescription = "banner item",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                if (index>0) {
+                    IconButton(
+                        onClick = {scope.launch {
+                            pagerState.animateScrollToPage(page = index-1)
+                        }},
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .clip(CircleShape)
+                            .background(Color.Gray.copy(alpha = Alpha.HALF))
+                    ) {
+                        Icon(
+                            painter = painterResource(Resources.Icon.BackArrow),
+                            contentDescription = "previous banner",
+                            tint = Color.Gray
+                        )
+                    }
+                }
+                if (index<bannerItems.size-1){
+                    IconButton(
+                        onClick = {scope.launch {
+                            pagerState.animateScrollToPage(page = index+1)
+                        }},
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clip(CircleShape)
+                            .background(Color.Gray.copy(alpha = Alpha.HALF))
+                    ) {
+                        Icon(
+                            painter = painterResource(Resources.Icon.ForwardArrow),
+                            contentDescription = "next banner",
+                            tint = Color.Gray
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            repeat(bannerItems.size) {i->
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .width(if (i==selectedIndex) 24.dp else 8.dp)
+                        .height(8.dp)
+                        .background(if (i==selectedIndex) IconSecondary else SurfaceLighter)
+                        .border(
+                            width = 0.2.dp,
+                            shape = CircleShape,
+                            color = Color.Gray
+                        )
+                )
+            }
+        }
+    }
+
 }
 

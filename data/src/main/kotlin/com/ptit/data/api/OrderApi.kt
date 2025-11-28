@@ -30,7 +30,7 @@ interface OrderApi {
     ): Response<ResponseEntity<OrderData>>
 
     // Required admin role
-    @PATCH("/api/v1/orders/{id}")
+    @PATCH("/api/v1/orders/{id}/status")
     suspend fun updateOrderStatus(
         @Header("Authorization") token:String,
         @Path("id") id: Int,

@@ -42,6 +42,8 @@ import com.ptit.shared.Resources
 import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.LoadingCard
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun BookCard(
@@ -51,6 +53,7 @@ fun BookCard(
     imageHeight : Dp = 160.dp,
     elevation : Dp = 0.dp,
 ){
+    val numberFormatter = NumberFormat.getNumberInstance(Locale.GERMAN)
     val cardWidth = imageHeight*0.66f
     Card(
         modifier = modifier
@@ -108,7 +111,7 @@ fun BookCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${item.price.toInt()} ₫",
+                    text = "${numberFormatter.format(item.price.toInt())} ₫",
                     modifier = Modifier.widthIn(max = cardWidth),
                     maxLines = 1,
                     textDecoration = TextDecoration.LineThrough,
@@ -128,9 +131,9 @@ fun BookCard(
                     style = TextStyle()
                 )
             }
-
+            val finalPrice = numberFormatter.format((item.price - item.price*item.discount/100).toInt())
             Text(
-                text = "${(item.price - item.price*item.discount/100).toInt()} ₫",
+                text = "$finalPrice ₫",
                 modifier = Modifier.widthIn(max = cardWidth),
                 maxLines = 1,
                 fontSize = FontSize.SMALL

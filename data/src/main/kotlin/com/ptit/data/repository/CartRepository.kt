@@ -14,7 +14,7 @@ interface CartRepository {
     suspend fun addItemToCart(
         accessToken: String,
         addToCartForm: AddToCartForm
-    ): RequestState<Unit>
+    ): RequestState<Int>
     suspend fun deleteCartItem(
         accessToken: String,
         productId:Int

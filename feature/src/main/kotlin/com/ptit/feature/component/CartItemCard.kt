@@ -43,6 +43,8 @@ import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.QuantityCounter
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @Composable
@@ -56,6 +58,7 @@ fun CartItemCard(
     onPlusClick:(Int)->Unit,
     onDeleteClick:()->Unit
 ){
+    val numberFormatter = NumberFormat.getNumberInstance(Locale.GERMAN)
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -116,7 +119,7 @@ fun CartItemCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${item.unitPrice}",
+                        text = "${numberFormatter.format(item.unitPrice)}",
                         fontSize = FontSize.SMALL,
                         textDecoration = TextDecoration.LineThrough
                     )
@@ -142,7 +145,7 @@ fun CartItemCard(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "${item.finalPrice}",
+                        text = "${numberFormatter.format(item.finalPrice)}",
                         fontSize = FontSize.REGULAR,
                         color = TextSecondary
                     )

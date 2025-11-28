@@ -261,7 +261,7 @@ fun ProfileScreen(
                         text = "Update",
                         onClick = {viewModel.updateProfile(
                             onError = {e->
-                                snackbarHostState.showSnackbar("e")
+                                snackbarHostState.showSnackbar(e)
                             },
                             onSuccess = {
                                 snackbarHostState.showSnackbar("Updated")

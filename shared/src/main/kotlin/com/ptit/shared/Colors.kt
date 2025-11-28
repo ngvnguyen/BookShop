@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 val GrayLighter = Color(0xFFFAFAFA)
 val Gray = Color(0xFFF6F5F5)
 val GrayDarker = Color(0xFFD9D6D6)
+val SurfaceOrange = Color(0xfffffbeb)
 
 val Yellowish = Color(0xFFEEFF00)
 val Orange = Color(0xFFF24C00)

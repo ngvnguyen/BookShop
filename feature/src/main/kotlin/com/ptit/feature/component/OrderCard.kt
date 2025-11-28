@@ -49,15 +49,20 @@ import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.PrimaryButton
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @Composable
 fun OrderCard(
     modifier : Modifier = Modifier,
     order: OrderData,
-    onClick: ()->Unit,
+    onViewDetailClick: ()->Unit,
+    onCancelOrderClick :()->Unit,
+    onReviewClick :()->Unit,
     orderEnum: OrderEnum
 ){
+    val numberFormatter = NumberFormat.getNumberInstance(Locale.GERMAN)
     var showMore by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
@@ -68,7 +73,6 @@ fun OrderCard(
                 color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT)
             )
             .background(SurfaceLighter)
-            .clickable(onClick = onClick)
             .padding(8.dp)
     ) {
         order.items.firstOrNull()?.let{
@@ -105,7 +109,7 @@ fun OrderCard(
         }
 
         Text(
-            text = "Total price: ${order.summary.finalPrice} ₫",
+            text = "Total price: ${numberFormatter.format(order.summary.finalPrice)} ₫",
             modifier = Modifier.align(Alignment.End)
         )
         when (orderEnum){
@@ -115,7 +119,7 @@ fun OrderCard(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Button(
-                        onClick= {},
+                        onClick= onCancelOrderClick,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = SurfaceDarker
                         ),
@@ -127,7 +131,7 @@ fun OrderCard(
                     }
                     Spacer(modifier = Modifier.width(4.dp))
                     Button(
-                        onClick= {},
+                        onClick= onViewDetailClick,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = ButtonPrimary
                         ),
@@ -141,7 +145,7 @@ fun OrderCard(
             }
             OrderEnum.PROCESSING -> {
                 Button(
-                    onClick= {},
+                    onClick= onViewDetailClick,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = ButtonPrimary
                     ),
@@ -160,7 +164,7 @@ fun OrderCard(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Button(
-                        onClick= {},
+                        onClick= onViewDetailClick,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = SurfaceDarker
                         ),
@@ -172,7 +176,7 @@ fun OrderCard(
                     }
                     Spacer(modifier = Modifier.width(4.dp))
                     Button(
-                        onClick= {},
+                        onClick= onReviewClick,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = ButtonPrimary
                         ),
@@ -187,9 +191,9 @@ fun OrderCard(
 
             OrderEnum.CANCELLED -> {
                 Button(
-                    onClick= {},
+                    onClick= onViewDetailClick,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = SurfaceDarker
+                        containerColor = ButtonPrimary
                     ),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.align(Alignment.End)

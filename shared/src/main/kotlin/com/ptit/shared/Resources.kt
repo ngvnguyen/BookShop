@@ -46,12 +46,19 @@ object Resources{
         val Check = R.drawable.check
         val Money = R.drawable.money
         val Voucher = R.drawable.voucher
+        val Info = R.drawable.info
+        val Mail = R.drawable.mail
+        val Phone = R.drawable.phone
     }
     object Image{
         val ShoppingCart = R.drawable.shopping_cart_image
-        val checkmark = R.drawable.checkmark_image
+        val CheckMark = R.drawable.checkmark_image
         val Cat = R.drawable.cat
-
+        val AppLogo = R.drawable.app_logo
+        val Banner1 = R.drawable.banner1
+        val Banner2 = R.drawable.banner2
+        val Banner3 = R.drawable.banner3
+        val Banner4 = R.drawable.banner4
     }
 
 }

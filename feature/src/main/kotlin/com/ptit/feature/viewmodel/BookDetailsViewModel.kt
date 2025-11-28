@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
 import com.ptit.data.model.cart.AddToCartForm
+import com.ptit.data.model.checkout.CheckoutRequest
 import com.ptit.data.repository.BookRepository
 import com.ptit.data.repository.CartRepository
 import com.ptit.feature.util.SessionManager
 import com.ptit.feature.form.BookForm
 import com.ptit.feature.form.toBookForm
+import com.ptit.feature.util.SharedState
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -21,7 +23,8 @@ class BookDetailsViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val bookRepository: BookRepository,
     private val cartRepository: CartRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val sharedState: SharedState
 ): ViewModel(){
     val bookId = savedStateHandle.get<Int>("bookId")
     var book: RequestState<BookForm> by mutableStateOf(RequestState.LOADING)
@@ -62,6 +65,28 @@ class BookDetailsViewModel(
             else onError(response.getErrorMessage())
         }
     }
+    fun buyNow(
+        onSuccess: suspend () -> Unit,
+        onError:suspend (String)->Unit
+    ){
+        viewModelScope.launch {
+            val response = bookId?.let{
+                cartRepository.addItemToCart(
+                    accessToken = accessToken,
+                    addToCartForm = AddToCartForm(
+                        productId = it,
+                        quantity = 1
+                    )
+                )
+            }?: RequestState.ERROR("Invalid book id")
+            if (response.isSuccess()) {
+                val cartItemId = response.getSuccessData()
+                sharedState.checkoutRequest = CheckoutRequest(listOf(CheckoutRequest.CartItem(cartItemId)),null)
+                onSuccess()
+            }
+            else onError(response.getErrorMessage())
+        }
 
+    }
 
 }

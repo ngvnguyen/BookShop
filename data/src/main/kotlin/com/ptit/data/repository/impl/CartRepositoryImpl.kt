@@ -60,11 +60,12 @@ class CartRepositoryImpl(private val cartApi: CartApi): CartRepository {
     override suspend fun addItemToCart(
         accessToken: String,
         addToCartForm: AddToCartForm
-    ): RequestState<Unit> {
+    ): RequestState<Int> {
         try{
             val response = cartApi.addItemToCart("Bearer $accessToken",addToCartForm)
             if (response.isSuccessful){
-                return RequestState.SUCCESS(Unit)
+                val data = response.body()?.data
+                data?.let { return RequestState.SUCCESS(it.id) }
             }
             val errBody = response.errorBody()?.string()
             errBody?.let {

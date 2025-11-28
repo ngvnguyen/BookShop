@@ -11,9 +11,11 @@ import com.ptit.feature.screen.ForgotPasswordScreen
 import com.ptit.feature.screen.HomeGraphScreen
 import com.ptit.feature.screen.ResetPasswordScreen
 import com.ptit.feature.navigation.Screen
+import com.ptit.feature.screen.AboutScreen
 import com.ptit.feature.screen.BookDetailsScreen
 import com.ptit.feature.screen.ChangePasswordScreen
 import com.ptit.feature.screen.CheckoutScreen
+import com.ptit.feature.screen.OrderDetailScreen
 import com.ptit.feature.screen.OrderScreen
 import com.ptit.feature.screen.OrderSuccessScreen
 import com.ptit.feature.screen.PickAddressScreen
@@ -80,6 +82,9 @@ fun NavGraph(
                 },
                 navigateToOrder = {
                     navController.navigate(Screen.Order)
+                },
+                navigateToAbout = {
+                    navController.navigate(Screen.About)
                 }
             )
         }
@@ -119,6 +124,13 @@ fun NavGraph(
                 }
             )
         }
+        composable<Screen.About> {
+            AboutScreen(
+                navigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
 
         composable<Screen.BookDetails> {
             BookDetailsScreen(
@@ -126,7 +138,7 @@ fun NavGraph(
                     navController.navigateUp()
                 },
                 navigateToCheckOut = {
-
+                    navController.navigate(Screen.Checkout)
                 }
             )
         }
@@ -179,7 +191,11 @@ fun NavGraph(
             )
         }
         composable<Screen.OrderDetails> {
-
+            OrderDetailScreen(
+                navigateBack = {
+                    navController.navigateUp()
+                }
+            )
         }
         adminNavGraph(
             navController = navController,

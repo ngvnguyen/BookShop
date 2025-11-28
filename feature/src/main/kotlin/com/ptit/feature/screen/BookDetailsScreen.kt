@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,15 +32,12 @@ import coil.compose.SubcomposeAsyncImage
 import com.ptit.data.DisplayResult
 import com.ptit.feature.viewmodel.BookDetailsViewModel
 import com.ptit.shared.Alpha
-import com.ptit.shared.ButtonSecondary
 import com.ptit.shared.FontSize
 import com.ptit.shared.IconSecondary
 import com.ptit.shared.Resources
-import com.ptit.shared.Surface
 import com.ptit.shared.SurfaceDarker
 import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
-import com.ptit.shared.bebasNeueFont
 import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.PrimaryButton
@@ -212,11 +208,6 @@ fun BookDetailsScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        PrimaryButton(
-                            text = "Buy Now",
-                            onClick = {},
-                            modifier = Modifier.weight(1f)
-                        )
                         PrimaryButton(
                             text = "Add to Cart",
                             icon = Resources.Image.ShoppingCart,

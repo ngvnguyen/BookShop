@@ -39,6 +39,9 @@ fun NavGraphBuilder.adminNavGraph(
             navigateToManagePublisher = {
                 navController.navigate(Screen.ManagePublisher)
             },
+            navigateToManageCoupon = {
+                navController.navigate(Screen.ManageCoupon)
+            }
         )
     }
     composable<Screen.ManageUser>{
@@ -97,6 +100,13 @@ fun NavGraphBuilder.adminNavGraph(
     }
     composable<Screen.ManagePublisher> {
         ManagePublisherScreen(
+            navigateBack = {navController.navigateUp()},
+            adminViewModel = adminViewModel
+        )
+    }
+
+    composable<Screen.ManageCoupon> {
+        ManageCouponScreen(
             navigateBack = {navController.navigateUp()},
             adminViewModel = adminViewModel
         )

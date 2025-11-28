@@ -57,6 +57,8 @@ data class Permission(
     fun isPublisher() = this.module == Module.PUBLISHERS
     fun isBook() = this.module == Module.BOOKS
     fun isPermission() = this.module == Module.PERMISSIONS
+    fun isCoupon() = this.module == Module.COUPONS
+    fun isOrder() = this.module == Module.ORDERS
 }
 
 fun PermissionResponseData.toPermissionData() =

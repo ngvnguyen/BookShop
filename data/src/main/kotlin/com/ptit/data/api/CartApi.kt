@@ -18,7 +18,7 @@ interface CartApi {
     suspend fun addItemToCart(
         @Header("Authorization") token:String,
         @Body body: AddToCartForm
-    ): Response<ResponseEntity<Unit>>
+    ): Response<ResponseEntity<CartData>>
 
     @PATCH("/api/v1/carts/items/{id}")
     suspend fun updateItemCart(

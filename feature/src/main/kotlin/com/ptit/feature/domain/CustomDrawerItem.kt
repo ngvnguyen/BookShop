@@ -17,6 +17,11 @@ enum class CustomDrawerItem(
         Resources.Icon.Key
     ),
 
+    About(
+        "About",
+        Resources.Icon.Info
+    ),
+
     Logout(
         "Log out",
         Resources.Icon.SignOut

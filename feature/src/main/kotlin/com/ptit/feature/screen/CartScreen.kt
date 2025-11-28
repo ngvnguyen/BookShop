@@ -85,6 +85,8 @@ import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.PrimaryButton
 import com.ptit.shared.component.QuantityCounter
 import org.koin.compose.viewmodel.koinViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,6 +99,7 @@ fun CartScreen(
     navigateToOrder:()->Unit,
     viewModel: HomeViewModel
 ) {
+    val numberFormatter = NumberFormat.getNumberInstance(Locale.GERMAN)
     val focusManager = LocalFocusManager.current
     val searchQuery by viewModel.cartSearchQuery.collectAsState()
     val cartItemsFiltered by viewModel.cartItemFilter.collectAsState()
@@ -374,7 +377,7 @@ fun CartScreen(
                                             fontSize = FontSize.REGULAR
                                         )
                                         Text(
-                                            text = "$totalPrice ₫",
+                                            text = "${numberFormatter.format(totalPrice)} ₫",
                                             color = TextSecondary,
                                             fontSize = FontSize.EXTRA_REGULAR,
                                             fontWeight = FontWeight.W600
