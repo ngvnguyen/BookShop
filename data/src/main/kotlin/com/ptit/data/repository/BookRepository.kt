@@ -22,4 +22,5 @@ interface BookRepository {
     suspend fun getNewestBook(accessToken: String): RequestState<FetchBookPagedResponse.Data>
     suspend fun getDiscountedBook(accessToken: String): RequestState<FetchBookPagedResponse.Data>
     suspend fun getBookById(accessToken: String,bookId:Int): RequestState<BookResponseData>
+    suspend fun deleteBook(accessToken: String,bookId:Int): RequestState<Unit>
 }

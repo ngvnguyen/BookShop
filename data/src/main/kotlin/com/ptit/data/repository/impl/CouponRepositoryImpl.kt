@@ -106,8 +106,7 @@ class CouponRepositoryImpl(private val couponApi: CouponApi): CouponRepository {
         try {
             val response = couponApi.deleteCoupon("Bearer $accessToken",id)
             if (response.isSuccessful){
-                val data = response.body()
-                data?.let { return RequestState.SUCCESS(it) }
+                return RequestState.SUCCESS("Deleted")
             }
             val errBody = response.errorBody()?.string()
             errBody?.let {

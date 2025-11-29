@@ -34,7 +34,7 @@ interface CategoryApi {
     suspend fun delete(
         @Header("Authorization") token: String,
         @Path("id") id:Int
-    ): Response<String>
+    ): Response<Unit>
 
     @GET("api/v1/categories/{id}")
     suspend fun getCategoryById(

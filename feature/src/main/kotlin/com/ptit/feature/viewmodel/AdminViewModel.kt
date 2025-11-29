@@ -46,6 +46,7 @@ import com.ptit.feature.form.toPermissionForm
 import com.ptit.feature.form.toPublisherForm
 import com.ptit.feature.form.toRoleForm
 import com.ptit.feature.form.toUpdateBookForm
+import com.ptit.feature.form.toUpdateCategoryForm
 import com.ptit.feature.form.toUpdatePermissionForm
 import com.ptit.feature.form.toUpdateRoleForm
 import com.ptit.feature.form.toUpdateUserForm
@@ -772,7 +773,25 @@ class AdminViewModel(
         }
     }
 
-
+    fun deleteBook(
+        onSuccess: suspend () -> Unit,
+        onError: suspend (String) -> Unit
+    ){
+        viewModelScope.launch {
+            try{
+                val response = bookRepository.deleteBook(
+                    accessToken = accessToken,
+                    bookId = bookForm.id
+                )
+                if (response.isSuccess()){
+                    onSuccess()
+                    bookRefreshTrigger.value++
+                }else onError(response.getErrorMessage())
+            }catch (e: Exception){
+                onError(e.message.toString())
+            }
+        }
+    }
 
     fun refreshRole(){
         roleRefreshTrigger.value++
@@ -804,6 +823,38 @@ class AdminViewModel(
             val response = categoryRepository.createCategory(
                 accessToken = accessToken,
                 createCategoryForm = categoryForm.toCreateCategoryForm()
+            )
+            if (response.isSuccess()){
+                onSuccess()
+                refreshCategoryTrigger.value++
+            }else onError(response.getErrorMessage())
+        }
+    }
+    fun updateCategory(
+        onSuccess: suspend () -> Unit,
+        onError: suspend (String) ->Unit
+    ){
+        viewModelScope.launch {
+            val response = categoryRepository.updateCategory(
+                accessToken = accessToken,
+                categoryForm.id,
+                updateCategoryForm = categoryForm.toUpdateCategoryForm()
+            )
+            if (response.isSuccess()){
+                onSuccess()
+                refreshCategoryTrigger.value++
+            }else onError(response.getErrorMessage())
+        }
+    }
+    fun deleteCategory(
+        id: Int,
+        onSuccess: suspend () -> Unit,
+        onError: suspend (String) ->Unit
+    ){
+        viewModelScope.launch {
+            val response = categoryRepository.deleteCategory(
+                accessToken = accessToken,
+                id = id
             )
             if (response.isSuccess()){
                 onSuccess()

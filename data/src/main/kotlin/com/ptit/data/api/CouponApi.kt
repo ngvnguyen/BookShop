@@ -32,7 +32,7 @@ interface CouponApi {
     suspend fun deleteCoupon(
         @Header("Authorization") token: String,
         @Path("id") id: String
-    ): Response<String>
+    ): Response<Unit>
 
     @GET("/api/v1/coupons")
     suspend fun getAllCoupons(

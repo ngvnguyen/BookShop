@@ -39,7 +39,8 @@ data class BookForm(
     )
     enum class Status(val title: String){
         AVAILABLE("AVAILABLE"),
-        OUT_OF_STOCK("OUT OF STOCK");
+        OUT_OF_STOCK("OUT OF STOCK"),
+        DELETED("DELETED");
         fun isAvailable() = this == AVAILABLE
     }
 }

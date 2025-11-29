@@ -178,7 +178,15 @@ fun ManageCategoryScreen(
                             },
                             canDelete = deleteMethod,
                             onDelete = {
-
+                                adminViewModel.deleteCategory(
+                                    id = item.id,
+                                    onSuccess = {
+                                        Toast.makeText(context,"Delete category successfully",Toast.LENGTH_SHORT).show()
+                                    },
+                                    onError = {e->
+                                        Toast.makeText(context,e,Toast.LENGTH_SHORT).show()
+                                    }
+                                )
                             }
                         )
                     }
@@ -188,14 +196,27 @@ fun ManageCategoryScreen(
                     ModifyCategoryDialog(
                         onDismissRequest = {dialogVisible=false},
                         onConfirm = {
-                            adminViewModel.createCategory(
-                                onSuccess = {
-                                    dialogVisible = false
-                                },
-                                onError = {e->
-                                    Toast.makeText(context,e,Toast.LENGTH_SHORT).show()
-                                }
-                            )
+                            if (adminViewModel.action == Action.CREATE){
+                                adminViewModel.createCategory(
+                                    onSuccess = {
+                                        Toast.makeText(context,"Create category successfully",Toast.LENGTH_SHORT).show()
+                                        dialogVisible = false
+                                    },
+                                    onError = {e->
+                                        Toast.makeText(context,e,Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }else{
+                                adminViewModel.updateCategory(
+                                    onSuccess = {
+                                        Toast.makeText(context,"Update category successfully",Toast.LENGTH_SHORT).show()
+                                        dialogVisible = false
+                                    },
+                                    onError = {e->
+                                        Toast.makeText(context,e,Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }
                         },
                         action = adminViewModel.action,
                         categoryForm = adminViewModel.categoryForm,

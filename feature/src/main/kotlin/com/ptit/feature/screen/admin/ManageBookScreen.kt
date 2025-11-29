@@ -89,6 +89,8 @@ import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.LoadingCard
 import com.ptit.shared.component.PrimaryButton
 import org.koin.compose.viewmodel.koinViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -345,7 +347,16 @@ fun ManageBookScreen(
                                             }
                                         },
                                         canDelete = deleteMethod,
-                                        onDelete = {},
+                                        onDelete = {
+                                            adminViewModel.deleteBook(
+                                                onSuccess = {
+                                                    Toast.makeText(context,"Deleted",Toast.LENGTH_SHORT).show()
+                                                },
+                                                onError = {e->
+                                                    Toast.makeText(context,e,Toast.LENGTH_SHORT).show()
+                                                }
+                                            )
+                                        },
                                         quantityVisible = true
                                     )
                                 }
@@ -702,6 +713,7 @@ fun BookItemCard(
     onDelete:()->Unit={},
     quantityVisible:Boolean = false
 ){
+    val numberFormatter = NumberFormat.getNumberInstance(Locale.GERMAN)
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -752,7 +764,8 @@ fun BookItemCard(
                         text = bookForm.name,
                         maxLines = 1,
                         fontSize = FontSize.EXTRA_REGULAR,
-                        fontWeight = FontWeight.W500
+                        fontWeight = FontWeight.W500,
+                        modifier = Modifier.fillMaxWidth(0.8f)
                     )
                     Text(
                         text = "by ${bookForm.author?.name}",
@@ -761,11 +774,10 @@ fun BookItemCard(
                         fontWeight = FontWeight.Light,
                         fontStyle = FontStyle.Italic
                     )
-
                     HorizontalDivider(color = Color.Black.copy(alpha = Alpha.TWENTY_PERCENT))
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Price: ${bookForm.price}vnd (-${bookForm.discount.toInt()}%)",
+                        text = "Price: ${numberFormatter.format(bookForm.price.toInt())} ₫ (-${bookForm.discount.toInt()}%)",
                         maxLines = 1,
                         fontSize = FontSize.REGULAR,
                         fontStyle = FontStyle.Italic,
@@ -804,8 +816,8 @@ fun BookItemCard(
                 Text(
                     text = bookForm.status.title,
                     color = when(bookForm.status){
-                        BookForm.Status.OUT_OF_STOCK -> Color.Red
                         BookForm.Status.AVAILABLE-> Color.Green
+                        else -> Color.Red
                     },
                     fontWeight = FontWeight.W400
                 )

@@ -96,7 +96,10 @@ fun NavGraphBuilder.adminNavGraph(
         )
     }
     composable<Screen.ManageOrder> {
-
+        ManageOrderScreen(
+            navigateBack = {navController.navigateUp()},
+            adminViewModel = adminViewModel
+        )
     }
     composable<Screen.ManagePublisher> {
         ManagePublisherScreen(

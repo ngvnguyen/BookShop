@@ -52,6 +52,8 @@ import com.ptit.shared.SurfaceLighter
 import com.ptit.shared.TextSecondary
 import com.ptit.shared.component.ErrorCard
 import com.ptit.shared.component.LoadingCard
+import java.text.NumberFormat
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.pow
 
@@ -75,6 +77,7 @@ fun AdminScreen(
     val overviewData by adminViewModel.overviewData.collectAsState()
     val revenueByMonthData by adminViewModel.revenueByMonthData.collectAsState()
     val rolePermission by adminViewModel.rolePermission
+    val numberFormatter = NumberFormat.getNumberInstance(Locale.GERMAN)
 
     Scaffold(
         containerColor = SurfaceDarker,
@@ -233,7 +236,7 @@ fun AdminScreen(
                             OverviewCard(
                                 modifier = Modifier.weight(1f),
                                 text1 = "Revenue",
-                                text2 = data.totalRevenue.toString(),
+                                text2 = "${numberFormatter.format(data.totalRevenue)} ₫",
                                 icon = Resources.Icon.Money
                             )
                         }

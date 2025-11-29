@@ -176,4 +176,28 @@ class BookRepositoryImpl(private val bookApi: BookApi): BookRepository {
             return RequestState.ERROR("Network error")
         }
     }
+
+    override suspend fun deleteBook(
+        accessToken: String,
+        bookId: Int
+    ): RequestState<Unit> {
+        try {
+
+            val response = bookApi.delete("Bearer $accessToken",bookId)
+            if (response.isSuccessful){
+                return RequestState.SUCCESS(Unit)
+            }
+            val errBody = response.errorBody()?.string()
+            errBody?.let { body->
+                val errMsg = Json.decodeFromString<ResponseEntity<Unit>>(body).message
+                return RequestState.ERROR(errMsg)
+            }
+            return RequestState.ERROR("Unknown error")
+        }catch (e: SocketTimeoutException){
+            return RequestState.ERROR("Server not responding")
+        } catch (e: Exception){
+            e.printStackTrace()
+            return RequestState.ERROR("Network error")
+        }
+    }
 }

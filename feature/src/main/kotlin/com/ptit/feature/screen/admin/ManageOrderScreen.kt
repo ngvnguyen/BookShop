@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -16,7 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.ptit.feature.viewmodel.Action
 import com.ptit.feature.viewmodel.AdminViewModel
 import com.ptit.shared.FontSize
 import com.ptit.shared.IconSecondary
@@ -25,14 +30,14 @@ import com.ptit.shared.SurfaceDarker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManageAuthorScreen(
+fun ManageOrderScreen(
     navigateBack:()->Unit,
     adminViewModel: AdminViewModel
 ){
     val rolePermission by adminViewModel.rolePermission
     val managePermission by remember {
         derivedStateOf {
-            rolePermission.firstOrNull{it.isAuthor()}
+            rolePermission.firstOrNull{it.isOrder()}
         }
     }
     if (managePermission == null) navigateBack()
@@ -65,7 +70,7 @@ fun ManageAuthorScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Manage Author",
+                        text = "Manage Order",
                         fontSize = FontSize.MEDIUM
                     )
                 },
