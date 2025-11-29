@@ -134,4 +134,25 @@ class OrderRepositoryImpl(private val orderApi: OrderApi): OrderRepository {
             return RequestState.ERROR("Network error")
         }
     }
+
+    override suspend fun getOrdersAdmin(token: String): RequestState<AllOrderData> {
+        try{
+            val response = orderApi.getOrdersAdmin("Bearer $token")
+            if (response.isSuccessful){
+                val data = response.body()?.data
+                data?.let { return RequestState.SUCCESS(it) }
+            }
+            val errBody = response.errorBody()?.string()
+            errBody?.let {
+                val errMsg = Json.decodeFromString<ResponseEntity<AllOrderData>>(it).message
+                return RequestState.ERROR(errMsg)
+            }
+            return RequestState.ERROR("Unknown error")
+        }catch (e: SocketTimeoutException){
+            return RequestState.ERROR("Server not responding")
+        } catch (e: Exception){
+            e.printStackTrace()
+            return RequestState.ERROR("Network error")
+        }
+    }
 }

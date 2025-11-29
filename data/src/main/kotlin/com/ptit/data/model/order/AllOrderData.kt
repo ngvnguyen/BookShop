@@ -15,5 +15,5 @@ data class AllOrderData(
     @SerialName("pages")
     val pages: Int,
     @SerialName("total")
-    val total: Int
+    val total: Int?
 )

@@ -10,11 +10,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ptit.data.RequestState
 import com.ptit.data.model.coupon.CouponData
+import com.ptit.data.model.order.OrderData
+import com.ptit.data.model.order.UpdateOrderStatusRequest
 import com.ptit.data.repository.AuthorRepository
 import com.ptit.data.repository.BookRepository
 import com.ptit.data.repository.CategoryRepository
 import com.ptit.data.repository.CouponRepository
 import com.ptit.data.repository.DashboardRepository
+import com.ptit.data.repository.OrderRepository
 import com.ptit.data.repository.PermissionRepository
 import com.ptit.data.repository.PublisherRepository
 import com.ptit.data.repository.RoleRepository
@@ -57,6 +60,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
@@ -99,6 +103,7 @@ class AdminViewModel(
     private val publisherRepository: PublisherRepository,
     private val roleRepository: RoleRepository,
     private val userRepository: UserRepository,
+    private val orderRepository: OrderRepository,
     private val dashboardRepository: DashboardRepository,
     private val couponRepository : CouponRepository,
     private val uploadImageHelper: UploadImageHelper,
@@ -345,6 +350,21 @@ class AdminViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = RequestState.LOADING
         )
+    val refreshOrderTrigger = MutableStateFlow(0)
+    val allOrder = combine(refreshOrderTrigger,accessTokenFlow) {_,token->
+        token
+    }.flatMapLatest { token->
+        flow {
+            if (token!=null){
+                val response = orderRepository.getOrdersAdmin(token)
+                emit(response)
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = RequestState.LOADING
+    )
 
     var permissionForm by mutableStateOf(PermissionForm(createdBy = email));private set
     val isPermissionFormValid :Boolean
@@ -940,6 +960,19 @@ class AdminViewModel(
                 onSuccess(response.getSuccessData())
                 refreshCouponTrigger.value++
             }
+            else onError(response.getErrorMessage())
+        }
+    }
+
+    fun updateOrderStatus(
+        id:Int,
+        newStatus: UpdateOrderStatusRequest.OrderStatus,
+        onSuccess: suspend () -> Unit,
+        onError: suspend (String) -> Unit
+    ){
+        viewModelScope.launch {
+            val response = orderRepository.updateOrderStatus(accessToken,id, UpdateOrderStatusRequest(newStatus))
+            if (response.isSuccess()) onSuccess()
             else onError(response.getErrorMessage())
         }
     }

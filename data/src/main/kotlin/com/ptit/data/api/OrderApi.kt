@@ -47,4 +47,9 @@ interface OrderApi {
     suspend fun getOrders(
         @Header("Authorization") token:String
     ): Response<ResponseEntity<AllOrderData>>
+
+    @GET("/api/v1/admin/orders")
+    suspend fun getOrdersAdmin(
+        @Header("Authorization") token:String
+    ): Response<ResponseEntity<AllOrderData>>
 }

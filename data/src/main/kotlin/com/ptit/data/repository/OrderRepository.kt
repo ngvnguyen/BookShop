@@ -13,4 +13,6 @@ interface OrderRepository {
     suspend fun updateOrderStatus(token:String,orderId:Int,orderStatusRequest: UpdateOrderStatusRequest): RequestState<String>
     suspend fun getOrderById(token:String,orderId:Int): RequestState<OrderData>
     suspend fun getOrders(token:String): RequestState<AllOrderData>
+    suspend fun getOrdersAdmin(token:String): RequestState<AllOrderData>
+
 }
